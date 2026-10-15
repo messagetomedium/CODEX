@@ -20,6 +20,10 @@ jobs:
       image: barichello/godot-ci:4.5.2
     steps:
       - uses: actions/checkout@v4
+      - name: Install validation dependency
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends python3
       - name: Validate, import, test and export Web
         run: bash tools/check_tasks_0_1.sh
       - uses: actions/upload-pages-artifact@v3
