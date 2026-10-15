@@ -1,5 +1,9 @@
 # «Трибуны»: три уровня и интеграция с существующей игрой
 
+Последующие правки интерфейса описаны в
+[TEST_REPORT_STANDS_HUD.md](TEST_REPORT_STANDS_HUD.md). Упоминания метки 55
+ниже относятся к исходной версии до этих правок.
+
 Godot **4.5.2.stable.official.6ce3de25a**, standard/GDScript,
 Compatibility, однопоточный Web. Адрес игры: https://messagetomedium.github.io/CODEX/.
 

@@ -292,26 +292,12 @@
       "top_banner": "ПЕРЕКРИЧИ ТРИБУНУ!",
       "round": "Раунд {round}",
       "time_left": "Осталось: {seconds} с",
-      "your_team": "ТВОЯ ТРИБУНА",
-      "rival_team": "СОПЕРНИК",
-      "tug_label": "ПЕРЕТЯГИВАНИЕ ТРИБУН",
-      "target_label": "Удержи шкалу на своей стороне",
-      "voice_label": "Сила твоего голоса",
-      "peaks": "Акценты: {peaks}/{targetPeaks}",
-      "score": "Преимущество: {score}%",
-      "target_marker": "55% — ориентир",
-      "center_marker": "50%",
-      "level": "Раунд {round} из {levelCount}",
-      "sound_hint": "Звук — только на ходе соперника",
-      "voice_wait": "Сейчас голос не учитывается",
-      "voice_go": "Громче и с отдельными акцентами",
-      "turn_number": "Ход {turn}/{turnCount}"
+      "level": "Раунд {round} из {levelCount}"
     },
     "turn": {
       "player": "ТВОЙ ХОД!",
       "opponent": "ХОД СОПЕРНИКА",
       "wait_caption": "Слушай соперника. Скоро твой выход!",
-      "switch_in": "Смена через {seconds} с",
       "go_caption": "Громче и ритмичнее!"
     },
     "chants": [
@@ -351,9 +337,7 @@
       "game_win": "Победа во всех раундах!",
       "game_summary": "Все раунды пройдены. Отличная поддержка!",
       "round_hint": "Для следующего раунда нужна победа.",
-      "draw_hint": "Ровная борьба. Попробуй ещё раз!",
-      "score_explainer": "Победа выше 50,5%. Метка 55% — запас преимущества.",
-      "peak_summary": "Выраженных акцентов: {peaks}"
+      "draw_hint": "Ровная борьба. Попробуй ещё раз!"
     },
     "difficulty": {
       "level_1": "Простой",

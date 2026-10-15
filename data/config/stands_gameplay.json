@@ -9,7 +9,6 @@
     "initial": 50.0,
     "center": 50.0,
     "draw_tolerance": 0.5,
-    "visual_player_target_marker": 55.0,
     "opponent_loss_per_full_turn": 5.0,
     "player_gain_max_per_turn": 10.0,
     "loudness_weight": 0.65,

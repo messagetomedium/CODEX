@@ -36,7 +36,7 @@ func _run() -> void:
 			review_ms+=int(ceil(turn.end*1000))+750
 			level._process(.016)
 			level.world.player.set_intensity(.9)
-			level.hud.present(level.match_model,level.level_index+1,.9)
+			level.hud.present(level.match_model,level.level_index+1)
 		elif mode=="opponent":
 			review_ms+=2200
 			level._process(.016)

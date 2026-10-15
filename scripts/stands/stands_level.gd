@@ -199,7 +199,7 @@ func _process(delta: float) -> void:
 	previous_loudness = loudness
 	previous_input_turn = match_model.turn_index
 	world.player.set_intensity(loudness)
-	hud.present(match_model,level_index+1,loudness)
+	hud.present(match_model,level_index+1)
 
 func _mic_error(raw: Dictionary, now: int) -> void:
 	clock.pause(now)
@@ -209,7 +209,6 @@ func _mic_error(raw: Dictionary, now: int) -> void:
 	previous_input_turn = -1
 	detector.loudness = 0
 	state = State.MIC_ERROR
-	App.animations.follow_value(hud.meter,^"value",0,"stands.voice_meter_response")
 	var key: String = {"denied":"permissionDenied","not-found":"notFound","busy":"busy"}.get(str(raw.status),"generic")
 	var code: String = raw.get("errorCode","")
 	if code in ["native","insecure","unsupported","disconnected","interrupted"]:
@@ -227,13 +226,13 @@ func _finish(now: int) -> void:
 	var won: bool = match_model.outcome == "win"
 	var all_won: bool = won and level_index == level_ids.size()-1
 	var teams: Array = App.config.data.stands_teams.teams
-	var values := {"round":level_index+1,"score":snappedf(match_model.score,.1),"peaks":match_model.total_peaks,"playerTeam":App.texts.text(teams[player_index].name_key),"opponentTeam":App.texts.text(teams[opponent_index].name_key)}
+	var values := {"round":level_index+1,"score":snappedf(match_model.score,.1),"playerTeam":App.texts.text(teams[player_index].name_key),"opponentTeam":App.texts.text(teams[opponent_index].name_key)}
 	var phrases: Array = App.config.data["ui.ru"].stands.results[match_model.outcome]
 	var title := str(phrases[rng.randi_range(0,phrases.size()-1)])
 	if won:title = App.texts.text("stands.results.game_win" if all_won else "stands.results.round_win",values)
 	var actions: Array = [{"id":"retry","label":App.texts.text("common.actions.restartGame" if all_won else "common.actions.retry")},{"id":"menu","label":App.texts.text("common.actions.menu")}]
 	if not all_won:actions.append({"id":"next","label":App.texts.text("common.actions.next"),"disabled":not won})
-	overlays.show_info({"kind":"final" if all_won or not won else "intermediate","layoutId":"result","animationProfile":"stands.final_popup_enter","headlineProfile":"stands.final_headline_enter","statsProfile":"stands.final_score_enter","actionsProfile":"stands.final_buttons_enter","title":title,"description":App.texts.text("stands.results.versus",values),"statistics":[App.texts.text("stands.results.summary",values),App.texts.text("stands.results.peak_summary",values)],"actions":actions},"final")
+	overlays.show_info({"kind":"final" if all_won or not won else "intermediate","layoutId":"result","animationProfile":"stands.final_popup_enter","headlineProfile":"stands.final_headline_enter","statsProfile":"stands.final_score_enter","actionsProfile":"stands.final_buttons_enter","title":title,"description":App.texts.text("stands.results.versus",values),"statistics":[App.texts.text("stands.results.summary",values)],"actions":actions},"final")
 	(world.player if won else world.opponent).set_state("win")
 	hud.present(match_model,level_index+1)
 
