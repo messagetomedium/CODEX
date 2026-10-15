@@ -30,6 +30,9 @@ jobs:
           apt-get install -y --no-install-recommends python3
       - name: Validate, import, test and export Web
         run: bash tools/check_tasks_0_1.sh
+      - name: Write public build version
+        run: |
+          python3 -c 'import json, os; from pathlib import Path; Path("build/web/version.json").write_text(json.dumps({"commit": os.environ["GITHUB_SHA"]}) + "\n")'
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
@@ -39,12 +42,18 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify the live Godot build
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python3 tools/verify_pages.py "$PAGE_URL" "$GITHUB_SHA"
