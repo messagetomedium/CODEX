@@ -25,7 +25,8 @@
       "anchor": "center",
       "centerX": 0.5,
       "centerY": 0.5,
-      "maxWidthFraction": 0.5
+      "maxWidthFraction": 0.5,
+      "maxHeightFraction": 0.32
     },
     "hud.round": {
       "anchor": "top-left",
@@ -57,6 +58,12 @@
       "centerY": 0.17,
       "maxWidthFraction": 0.5,
       "maxHeightFraction": 0.25
+    },
+    "microphoneStatus": {
+      "x": 0.25,
+      "y": 0.105,
+      "widthFraction": 0.5,
+      "heightFraction": 0.12
     }
   },
   "eventPlacement": {
@@ -190,6 +197,22 @@
       "actionY": 0.16,
       "actionWidth": 0.19,
       "actionHeight": 0.055
+    },
+    "microphoneError": {
+      "paddingFraction": 0.025,
+      "titleY": 0.02,
+      "titleHeight": 0.055,
+      "objectiveY": 0.085,
+      "objectiveHeight": 0.12,
+      "actionY": 0.235,
+      "actionWidth": 0.24,
+      "actionHeight": 0.06
+    },
+    "microphoneStatus": {
+      "titleY": 0.01,
+      "titleHeight": 0.035,
+      "textY": 0.05,
+      "textHeight": 0.06
     }
   }
 }

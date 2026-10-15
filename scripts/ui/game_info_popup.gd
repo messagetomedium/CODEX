@@ -14,7 +14,8 @@ func configure(content: Dictionary) -> void:
 	panel.add_theme_stylebox_override("panel", UI.style(UI.PAPER, UI.INK, 24))
 	add_child(panel)
 	var compact: bool = content.get("instructionItems", []).is_empty()
-	var layout: Dictionary = App.config.data.ui_layout.components["diagnostic" if compact else "popup"]
+	var layout_id: String = content.get("layoutId", "diagnostic" if compact else "popup")
+	var layout: Dictionary = App.config.data.ui_layout.components[layout_id]
 	var unit: Vector2 = App.design_size
 	var padding: float = unit.x * layout.paddingFraction
 	UI.label(self, content.get("title", ""), Rect2(padding, unit.y * layout.titleY, size.x - padding * 2, unit.y * layout.titleHeight), 34)

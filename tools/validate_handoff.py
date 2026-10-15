@@ -91,4 +91,4 @@ if 'barichello/godot-ci:4.5.2' not in workflow or 'actions/deploy-pages@v4' not 
 if errors:
     print('FAIL:\n'+'\n'.join(' - '+x for x in errors),file=sys.stderr)
     sys.exit(1)
-print('OK: Godot handoff, 5 JSON configs, 3 cards, 3 infographic slots, 4 result tiers, tips, 21 animation profiles, Godot Web preset + Pages workflow')
+print(f'OK: Godot handoff, 5 JSON configs, 3 cards, 3 infographic slots, 4 result tiers, tips, {len(anim["profiles"])} animation profiles, Godot Web preset + Pages workflow')

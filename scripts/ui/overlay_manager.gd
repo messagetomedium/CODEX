@@ -4,8 +4,12 @@ signal action_requested(action_id: String)
 const PopupScene = preload("res://ui/GameInfoPopup.tscn")
 var popup: Control
 var closing := false
+var operation := 0
+var panel_profile := "intro.panel"
 
 func show_info(content: Dictionary, placement_id: String = "intro") -> void:
+	operation += 1
+	panel_profile = content.get("animationProfile", "intro.panel")
 	if is_instance_valid(popup):
 		remove_child(popup)
 		popup.queue_free()
@@ -17,21 +21,26 @@ func show_info(content: Dictionary, placement_id: String = "intro") -> void:
 	add_child(popup)
 	popup.configure(content)
 	popup.action_requested.connect(func(id: String): action_requested.emit(id))
-	App.animations.play(popup, "intro.panel")
+	App.animations.play(popup, panel_profile)
 
 func dismiss(on_closed: Callable) -> void:
 	if closing or not is_instance_valid(popup):
 		return
 	closing = true
+	operation += 1
 	for button in popup.action_buttons:
 		button.disabled = true
-	var tween: Tween = App.animations.play(popup, "intro.panel", "exit")
+	var tween: Tween
+	if App.config.data.ui_animations.profiles[panel_profile].has("exit"):
+		tween = App.animations.play(popup, panel_profile, "exit")
 	if tween:
-		tween.chain().tween_callback(_finish_dismiss.bind(on_closed))
+		tween.chain().tween_callback(_finish_dismiss.bind(operation, on_closed))
 	else:
-		_finish_dismiss(on_closed)
+		_finish_dismiss(operation, on_closed)
 
-func _finish_dismiss(on_closed: Callable) -> void:
+func _finish_dismiss(token: int, on_closed: Callable) -> void:
+	if token != operation:
+		return
 	if is_instance_valid(popup):
 		remove_child(popup)
 		popup.queue_free()

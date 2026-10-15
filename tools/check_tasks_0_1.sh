@@ -8,6 +8,7 @@ if ! "$GODOT_BIN" --headless --version | grep -q '^4\.5\.2\.stable\.'; then
 fi
 python3 tools/validate_handoff.py
 mkdir -p build/checks build/web
+touch build/.gdignore
 report_failure() {
     python3 - "$1" "build/checks/$1.log" <<'PY_REPORT'
 import re, sys
@@ -35,8 +36,15 @@ run_godot config --script res://tests/config_smoke_test.gd
 run_godot task-1 --script res://tests/task_1_smoke_test.gd
 grep -q 'Godot config smoke test OK:' build/checks/config.log
 grep -q 'Task 1 integration checks: .*failed: 0' build/checks/task-1.log
+run_godot voice --script res://tests/voice_detector_test.gd
+run_godot voice-debug --script res://tests/voice_detector_test.gd -- --voice-debug
+run_godot task-2 --script res://tests/task_2_smoke_test.gd
+grep -q 'Voice detector checks: .*failed: 0' build/checks/voice.log
+grep -q 'Voice detector checks: .*failed: 0' build/checks/voice-debug.log
+grep -q 'Task 2 integration checks: .*failed: 0' build/checks/task-2.log
+node --test tests/microphone_bridge_test.cjs
 run_godot web --export-release Web build/web/index.html
 for artifact in index.html index.js index.wasm index.pck; do
     test -s "build/web/$artifact"
 done
-echo 'PASS: handoff, Godot import, config smoke, Task 1 integration, Web artifacts'
+echo 'PASS: handoff, Godot import, config smoke, Task 1/2 integration, voice detector, JS bridge, Web artifacts'

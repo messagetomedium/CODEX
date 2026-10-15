@@ -1,5 +1,5 @@
 extends SceneTree
-## Integration checks for Tasks 0–1 only. No simulated microphone/gameplay.
+## Menu/blockout regression checks. Native Start honestly reports Web-only microphone.
 
 var checks := 0
 var failures: Array[String] = []
@@ -17,6 +17,10 @@ func check(condition: bool, message: String) -> void:
 func frames(count: int = 3) -> void:
 	for i in count:
 		await process_frame
+
+func level_is_browser_only() -> bool:
+	var factory = load("res://scripts/voice/voice_input_factory.gd")
+	return not factory.debug_enabled(app.config.data.gameplay)
 
 func _run() -> void:
 	app = root.get_node("App")
@@ -60,14 +64,14 @@ func _run() -> void:
 	var keeper_position: Vector2 = level.world.keeper.position
 	popup.action_buttons[0].pressed.emit()
 	await create_timer(0.6).timeout
-	check(level.state == level.State.WAITING_FOR_TASK_2, "Start explicitly waits for later microphone task")
+	check(level.state == level.State.MIC_ERROR, "Native Start reports that browser microphone requires the Web build")
 	check(level.overlays.popup.instruction_items.is_empty(), "Intro replaced within same reusable popup")
 	check(level.world.ball.position == ball_position and level.world.keeper.position == keeper_position, "Start does not start gameplay")
 	check(level.hud.get_node("Goals").text == app.texts.text("goal.hud.goals", {"goals": 0, "goalTarget": 3}), "No goals simulated")
 	check(level.hud.get_node("Attempts").text == app.texts.text("goal.hud.attempts", {"attemptsUsed": 0, "maxAttempts": 6}), "No attempts consumed")
 	app.reset_button.pressed.emit()
 	await frames()
-	check(current_scene.name == "MainMenu", "Reset from diagnostic state")
+	check(current_scene.name == "MainMenu", "Reset from microphone error state")
 	app.reset_button.pressed.emit()
 	await frames()
 	check(current_scene.name == "MainMenu", "Reset from menu")
@@ -101,6 +105,6 @@ func _run() -> void:
 	check(target.modulate.a == 1 and target.position.y == 50, "Early hover cannot freeze a transparent card")
 	target.free()
 	check(app.texts.text("goal.hud.round", {"round": 1.0}) == app.texts.text("goal.hud.round", {"round": 1}), "JSON whole numbers have no decimal suffix in UI")
-	check(not FileAccess.file_exists("res://web/microphone_bridge.js"), "Task 2 remains unimplemented")
+	check(level_is_browser_only(), "No automatic native keyboard fallback")
 	print("Task 1 integration checks: ", checks, "; passed: ", checks - failures.size(), "; failed: ", failures.size())
 	quit(0 if failures.is_empty() else 1)

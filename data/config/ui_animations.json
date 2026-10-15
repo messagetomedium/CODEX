@@ -350,6 +350,18 @@
           "opacity": 0
         }
       }
+    },
+    "microphone.status": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0
+        },
+        "to": {
+          "opacity": 1
+        }
+      }
     }
   }
 }

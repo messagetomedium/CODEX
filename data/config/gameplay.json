@@ -53,7 +53,15 @@
     "kickAttackDeltaNormalized": 0.23,
     "kickLevelMinNormalized": 0.56,
     "impulseReleaseThresholdNormalized": 0.32,
-    "smoothingMs": 75
+    "smoothingMs": 75,
+    "referenceRms": 0.1,
+    "noiseFloorMinRms": 0.003,
+    "noiseGateMultiplier": 1.8,
+    "maxNoiseFloorRms": 0.03,
+    "calibrationMaxRms": 0.015,
+    "noiseRiseMs": 2000,
+    "noiseFallMs": 500,
+    "rollingHoldMs": 100
   },
   "eventFeedback": {
     "durationMs": 2500,
@@ -74,6 +82,12 @@
       "1",
       "2",
       "3"
+    ],
+    "quietRms": 0.04,
+    "kickRms": [
+      0.065,
+      0.085,
+      0.12
     ]
   }
 }

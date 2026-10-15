@@ -60,3 +60,19 @@ func _apply(node: Control, state: Dictionary) -> void:
 	var properties := _properties(node, state)
 	for property in properties:
 		node.set_indexed(NodePath(property), properties[property])
+
+func follow_value(node: Control, property: NodePath, target: float, profile_id: String) -> void:
+	if is_equal_approx(float(node.get_meta("ui_follow_target", -1.0)), target):
+		return
+	node.set_meta("ui_follow_target", target)
+	if node.has_meta("ui_follow_tween"):
+		var previous: Tween = node.get_meta("ui_follow_tween")
+		if previous and previous.is_valid():
+			previous.kill()
+	var duration := float(profiles[profile_id].follow.smoothingMs) / 1000.0
+	if duration <= 0:
+		node.set_indexed(property, target)
+		return
+	var tween := node.create_tween()
+	node.set_meta("ui_follow_tween", tween)
+	tween.tween_property(node, property, target, duration).set_trans(Tween.TRANS_LINEAR)
