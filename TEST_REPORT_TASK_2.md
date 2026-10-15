@@ -40,8 +40,8 @@
 Историческое имя скрипта сохранено; он теперь проверяет и задачу 2.
 Логи — `build/checks/`, сборка — `build/web/`, оба каталога игнорируются Git.
 `build/.gdignore` создаётся перед импортом, чтобы результаты сборок/тестов
-не импортировались и не попадали обратно в PCK. Существующий Pages workflow
-сохранён и запускает расширенный скрипт проверок.
+не импортировались и не попадали обратно в PCK. Pages workflow сохранён по структуре и версии Godot; в установку зависимостей
+добавлен Node.js для новых JS-тестов. Он запускает расширенный скрипт проверок.
 
 Браузерная проверка: `python3 tests/web_smoke_test.py` после запуска локального
 HTTP-сервера каталога build/web на порту 8765. Она использует Chromium fake
@@ -77,7 +77,10 @@ capture, синтетический сигнал и имитацию отказ�
 - data/config/{gameplay,ui.ru,ui_layout,ui_animations}.json — новые параметры микрофона, строки, размещение и профиль статуса.
 - tests/{voice_detector_test,task_2_smoke_test}.gd и UID; tests/microphone_bridge_test.cjs.
 - tests/task_1_smoke_test.gd; tests/web_smoke_test.py — регрессия и Web-микрофон.
+- .github/workflows/web-pages.yml — зависимость Node.js для JS-тестов.
 - tools/check_tasks_0_1.sh; tools/validate_handoff.py — расширение проверок и точный счёт профилей.
 - WEB_PREVIEW.md; TEST_REPORT_TASK_2.md; docs/review/task-2/*.png.
 
-Утверждённые документы, референс, renderer/export preset и workflow не изменены.
+Утверждённые документы, референс и renderer/export preset не изменены. В workflow
+изменена только установка Node.js: без неё новый JS-тест в контейнере завершался
+кодом 127. Порядок build/deploy и публикация только main сохранены.

@@ -27,7 +27,7 @@ jobs:
       - name: Install validation and font dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends python3 fontconfig fonts-dejavu-core
+          apt-get install -y --no-install-recommends python3 fontconfig fonts-dejavu-core nodejs
       - name: Validate, import, test and export Web
         run: bash tools/check_tasks_0_1.sh
       - name: Write public build version
