@@ -96,41 +96,42 @@ func _init() -> void:
 		sim = model()
 		check(sim.spawn_defender(direction, 0.7), "Spawn a defender from either edge")
 		check(not sim.spawn_defender(-direction, 0.5), "An active defender prevents a second spawn")
-		var y: float = sim.defender_y
+		var y: float = sim.defenders[0].y
 		sim.step(1, voice())
-		check(sim.defender_active and sim.defender_y == y, "A crossing keeps its fixed lane Y")
-		sim.step(2, voice())
-		check(not sim.defender_active and sim.outcome.is_empty(), "Defender fully exits without touching a READY ball")
+		check(sim.defenders[0].active and sim.defenders[0].y == y, "A crossing keeps its fixed lane Y")
+		sim.step(4, voice())
+		check(not sim.defenders[0].active and sim.outcome.is_empty(), "Defender fully exits without touching a READY ball")
 
 	sim = model()
 	sim.ball.kick(1)
+	sim.ball.flight_arc = 200
 	sim.ball.flight_fraction = 0.5
 	sim.ball.progress = 0.6
 	sim.ball.has_moved = true
 	sim.spawn_defender(1, 0.5)
-	sim.defender_x = 0.5
+	sim.defenders[0].x = 0.5
 	sim.step(0.01, voice())
-	check(sim.outcome == "intercept" and sim.ball.height() > 300, "Defender intercepts visible overlap even high in the air")
+	check(sim.outcome == "intercept" and sim.ball.height() > 150, "Defender intercepts visible overlap even high in the air")
 	check(is_equal_approx(sim.ball.progress, 0.6), "Intercept freezes at first contact without a bounce")
 
 	sim = model()
 	sim.settings.simulation.maxStepSeconds = 2
-	sim.ball.progress = 0.4
+	sim.ball.progress = 0.5
 	sim.ball.has_moved = true
 	sim.spawn_defender(1, 0.7)
-	sim.defender_x = 0.1
+	sim.defenders[0].x = 0.1
 	sim.step(2, voice())
-	check(sim.outcome == "intercept" and sim.defender_x < 0.5, "Swept screen collision catches a defender passing between endpoint frames")
+	check(sim.outcome == "intercept" and sim.defenders[0].x < 0.5, "Swept screen collision catches a defender passing between endpoint frames")
 	sim = model()
 	sim.ball.progress = 0.999
 	sim.spawn_defender(1, 0.5)
-	sim.defender_x = 0.5
+	sim.defenders[0].x = 0.5
 	sim.step(0.1, voice(1))
 	check(sim.outcome == "intercept", "Defender takes priority when both events are possible at the goal line")
 	sim = model()
 	sim.ball.progress = 0.999
 	sim.spawn_defender(-1, 0.5)
-	sim.defender_x = 0.9
+	sim.defenders[0].x = 0.9
 	sim.step(2, voice(1))
 	check(sim.outcome == "goal", "A later defender intersection cannot override an earlier goal")
 
@@ -143,16 +144,16 @@ func _init() -> void:
 	var spawner := Spawner.new(config)
 	spawner.rng.seed = 1920
 	spawner.step(0.01, sim)
-	check(sim.defender_active, "External scheduler supplies an initial crossing")
-	var lane: float = sim.defender_y
+	check(sim.defenders[0].active, "External scheduler supplies an initial crossing")
+	var lane: float = sim.defenders[0].y
 	spawner.step(50, sim)
-	check(sim.defender_y == lane, "Scheduler never replaces a still-active defender")
-	sim.step(3, voice())
+	check(sim.defenders[0].y == lane, "Scheduler never replaces a still-active defender")
+	sim.step(5, voice())
 	spawner.step(0.01, sim)
-	check(not sim.defender_active and spawner.wait_seconds >= 0.65 and spawner.wait_seconds <= 1.3, "A new random gap begins only after the previous defender exits")
+	check(not sim.defenders[0].active and spawner.wait_timers[0] >= 0.65 and spawner.wait_timers[0] <= 1.3, "A new random gap begins only after the previous defender exits")
 	spawner.step(0.64, sim)
-	check(not sim.defender_active, "Defender does not respawn before the gap")
+	check(not sim.defenders[0].active, "Defender does not respawn before the gap")
 	spawner.step(1.31, sim)
-	check(sim.defender_active and sim.defender_y >= 0.42 and sim.defender_y <= 0.72, "Next crossing uses an allowed randomly selected lane")
+	check(sim.defenders[0].active and sim.defenders[0].y >= 0.55 and sim.defenders[0].y <= 0.74, "Next crossing uses an allowed randomly selected lane")
 	print("Goal simulation checks: ", checks, "; passed: ", checks - failures, "; failed: ", failures)
 	quit(0 if failures == 0 else 1)

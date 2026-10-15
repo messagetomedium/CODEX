@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--url', default='http://127.0.0.1:8765/index.html')
-parser.add_argument('--output', default='/workspace/artifacts/matryoshka-task-4')
+parser.add_argument('--output', default='/workspace/artifacts/matryoshka-three-rounds')
 args = parser.parse_args()
 out = Path(args.output)
 out.mkdir(parents=True, exist_ok=True)
@@ -31,7 +31,7 @@ with sync_playwright() as p:
       navigator.mediaDevices.getUserMedia = () => { throw Error('Review fixture requested microphone'); };
     ''')
     report = []
-    for mode in ['catch', 'goal', 'final-win']:
+    for mode in ['catch', 'goal', 'frame', 'final-win', 'round-2', 'round-3', 'game-win']:
         page = context.new_page()
         errors, messages = [], []
         page.on('pageerror', lambda e: errors.append(str(e)))
@@ -56,15 +56,15 @@ with sync_playwright() as p:
                 return sum(all(abs(a-b) < 3 for a, b in zip(image.getpixel((x, y)), (245,237,218)))
                            for x in range(left, right) for y in range(228, 250))
             assert cream_count(612, 623) > 10 and cream_count(658, 670) > 10, 'Gloves did not rise to both sides of the airborne ball'
-        if mode == 'final-win':
+        if mode in ['final-win', 'game-win']:
             assert image.getpixel((260,190)) == (250,246,237), 'Winning final was not centrally placed'
             page.set_viewport_size({'width':1024,'height':768})
             page.wait_for_timeout(500)
-            page.screenshot(path=str(out / 'final-win-4x3.png'))
+            page.screenshot(path=str(out / (mode + '-4x3.png')))
         bad = [m for m in messages if 'SCRIPT ERROR' in m or m.startswith('error: ERROR:')]
         assert not errors and not bad, errors + bad
         report.append({'mode':mode, 'result':'passed', 'console':messages, 'errors':errors})
         page.close()
     browser.close()
 (out / 'visual-review-log.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
-print('VISUAL PASS: raised gloves/catch, goal feedback, central winning final at 16:9 and 4:3; no physical microphone')
+print('VISUAL PASS: raised gloves/catch, goal feedback, round 2/3 defenders, intermediate victory and game completion at 16:9 and 4:3; no physical microphone')

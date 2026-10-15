@@ -134,8 +134,10 @@ func _run() -> void:
 		check(level.state == level.State.FINAL and level.round_progress.goals == goals, "The correct 0/1/2/3 tier opens the round final")
 		var popup: Control = level.overlays.popup
 		check(popup.size.is_equal_approx(intro_size) and popup.get_global_rect().get_center().is_equal_approx(app.design_size / 2), "Final matches instruction size and covers the central zone")
-		check(popup.action_buttons.size() == 3 and popup.action_buttons[2].disabled and popup.action_buttons[2].pressed.get_connections().is_empty(), "Final has Retry/Menu and a genuinely disabled Next")
+		check(popup.action_buttons.size() == 3 and popup.action_buttons[2].disabled == (goals < 3) and popup.action_buttons[2].pressed.get_connections().size() == (0 if goals < 3 else 1), "Round result unlocks Next only after a win")
 		var phrases: Array = app.config.data["ui.ru"].goal.results.tiers[str(goals)].phrases
+		if goals == 3:
+			phrases = [app.texts.text("goal.results.roundWinTitle", level.round_progress.values())]
 		var matching := false
 		for node in popup.get_children():
 			if node is Label and node.text in phrases:

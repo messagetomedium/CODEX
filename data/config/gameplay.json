@@ -17,7 +17,8 @@
     "rollingMaxProgressPerSecond": 0.25,
     "stopInertiaMs": 100,
     "scaleAtGoalLine": 0.16,
-    "shadowContactRadiusFraction": 0.88
+    "shadowContactRadiusFraction": 0.88,
+    "hitboxRadiusFraction": 0.4
   },
   "kick": {
     "cooldownMs": 450,
@@ -33,22 +34,31 @@
   "goalkeeper": {
     "patrolLeftX": 0.37,
     "patrolRightX": 0.63,
-    "crossScreenSeconds": 2.9,
-    "hitboxWidthFractionOfCanvas": 0.055,
+    "crossScreenSeconds": 4.4,
+    "hitboxWidthFractionOfCanvas": 0.045,
     "noJump": true,
     "headTopHeightFraction": 0.955,
-    "raisedHandsWidthRadiusFraction": 0.95
+    "raisedHandsWidthRadiusFraction": 0.95,
+    "ballContactRadiusFraction": 0.25,
+    "pattern": []
   },
   "defender": {
     "maxSimultaneous": 1,
-    "crossScreenSeconds": 2.6,
+    "crossScreenSeconds": 4.4,
     "respawnGapMsMin": 650,
     "respawnGapMsMax": 1300,
-    "laneYNormalizedMin": 0.42,
-    "laneYNormalizedMax": 0.72,
-    "hitboxInsetFraction": 0.12,
+    "laneYNormalizedMin": 0.55,
+    "laneYNormalizedMax": 0.74,
+    "hitboxInsetFraction": 0.2,
     "allowEitherDirection": true,
-    "hitboxWidthToHeight": 0.67
+    "hitboxWidthToHeight": 0.67,
+    "minDepthAheadOfGoal": 0.05,
+    "minimumLaneSeparation": 0.065,
+    "lanes": [
+      0.56,
+      0.65,
+      0.74
+    ]
   },
   "microphone": {
     "rmsWindowMs": 35,
@@ -98,5 +108,107 @@
   },
   "simulation": {
     "maxStepSeconds": 0.004166666666666667
-  }
+  },
+  "goalFrame": {
+    "ballContactRadiusFraction": 0.12
+  },
+  "rounds": [
+    {
+      "number": 1,
+      "defender": {
+        "maxSimultaneous": 1,
+        "crossScreenSeconds": 4.4,
+        "lanes": [
+          0.56,
+          0.65,
+          0.74
+        ]
+      },
+      "goalkeeper": {
+        "crossScreenSeconds": 4.4,
+        "pattern": []
+      }
+    },
+    {
+      "number": 2,
+      "defender": {
+        "maxSimultaneous": 2,
+        "crossScreenSeconds": 3.5,
+        "lanes": [
+          0.57,
+          0.73
+        ]
+      },
+      "goalkeeper": {
+        "crossScreenSeconds": 3.9,
+        "pattern": [
+          {
+            "to": 0.95,
+            "holdMs": 220
+          },
+          {
+            "to": 0.35,
+            "holdMs": 0
+          },
+          {
+            "to": 0.62,
+            "holdMs": 120
+          },
+          {
+            "to": 0.05,
+            "holdMs": 180
+          },
+          {
+            "to": 0.5,
+            "holdMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "defender": {
+        "maxSimultaneous": 3,
+        "crossScreenSeconds": 2.6,
+        "lanes": [
+          0.55,
+          0.645,
+          0.74
+        ]
+      },
+      "goalkeeper": {
+        "crossScreenSeconds": 3.4,
+        "pattern": [
+          {
+            "to": 0.95,
+            "holdMs": 180
+          },
+          {
+            "to": 0.55,
+            "holdMs": 100
+          },
+          {
+            "to": 0.78,
+            "holdMs": 0
+          },
+          {
+            "to": 0.2,
+            "holdMs": 180
+          },
+          {
+            "to": 0.42,
+            "holdMs": 0
+          },
+          {
+            "to": 0.05,
+            "holdMs": 140
+          },
+          {
+            "to": 0.5,
+            "holdMs": 0
+          }
+        ]
+      }
+    }
+  ]
 }

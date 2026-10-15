@@ -40,7 +40,22 @@ for item in ui['goal']['intro']['instructions']:
     if item['visual']['mode'] not in ['icon','codeAnimation']:errors.append(f'Invalid visual mode: {item["id"]}')
 if game['round']['goalTarget']!=3 or game['round']['maxAttempts']!=6 or game['round']['number']!=1:
     errors.append('Expected 3 goals / 6 attempts / round 1')
-if game['defender']['maxSimultaneous']!=1:errors.append('At most one defender')
+if game['defender']['maxSimultaneous']!=1:errors.append('Round one must have one defender')
+rounds=game.get('rounds', [])
+if [r.get('number') for r in rounds] != [1,2,3]:errors.append('Expected three ordered rounds')
+if [r['defender']['maxSimultaneous'] for r in rounds] != [1,2,3]:errors.append('Expected one/two/three defenders')
+if len(rounds)==3:
+    speeds=[r['defender']['crossScreenSeconds'] for r in rounds]
+    if not (speeds[0]>speeds[1]>speeds[2] and speeds[2]==2.6):errors.append('Defender speeds must increase to the former 2.6-second crossing in round three')
+    keeper_times=[r['goalkeeper']['crossScreenSeconds'] for r in rounds]
+    if not keeper_times[0]>keeper_times[1]>keeper_times[2]>2.9:errors.append('Keeper speeds must increase moderately')
+    min_lane=layout['refComposition']['goal']['y']+game['defender']['minDepthAheadOfGoal']
+    for r in rounds:
+        lanes=r['defender']['lanes']
+        if len(lanes)<r['defender']['maxSimultaneous'] or any(y<min_lane for y in lanes):errors.append('Defenders need distinct lanes strictly in front of the goal')
+        if any(abs(a-b)<game['defender']['minimumLaneSeparation'] for i,a in enumerate(lanes) for b in lanes[i+1:]):errors.append('Defender lanes overlap')
+        pattern=r['goalkeeper']['pattern']
+        if r['number']>1 and (not pattern or pattern[-1]['to']!=0.5 or any(not 0<=leg['to']<=1 or leg['holdMs']<0 for leg in pattern)):errors.append('Keeper patterns must be bounded and loop back to center')
 if not (game['round']['autoIdleReset']==False and game['options']['soundsEnabled']==False and game['options']['micPlaybackEnabled']==False):
     errors.append('No auto idle reset and no audio playback')
 if game['options']['introBeforeEveryRound'] != False:errors.append('Instructions only before minigame')

@@ -5,6 +5,7 @@ const Entity = preload("res://scripts/goal/world_entity.gd")
 var ball: Node2D
 var keeper: Node2D
 var defender: Node2D
+var defenders: Array[Node2D] = []
 var goal: Node2D
 var feedback_tweens: Array[Tween] = []
 
@@ -16,6 +17,7 @@ func _ready() -> void:
 	goal.frame_width = maxf(4, goal.dimensions.x * layout.goalFrameWidthFraction)
 	keeper = _entity("Goalkeeper", "keeper", goal.position, Vector2(0, design.y * layout.keeperHeight))
 	defender = _entity("Defender", "defender", design * Vector2(layout.defenderX, layout.defenderY), Vector2(0, design.y * layout.defenderHeight))
+	defenders.append(defender)
 	ball = _entity("Ball", "ball", design * Vector2(composition.ballAtStart.x, composition.ballAtStart.y), Vector2(design.x * composition.ballAtStart.diameterFractionOfWidth / 2, 0))
 	ball.shadow_contact = App.config.data.gameplay.ball.shadowContactRadiusFraction
 
@@ -26,14 +28,23 @@ func present(simulation: RefCounted) -> void:
 	ball.shadow_drop = simulation.ball.height() / ball.scale.y
 	ball.queue_redraw()
 	keeper.position.x = simulation.keeper_x * App.design_size.x
-	defender.visible = simulation.defender_active
-	defender.position = Vector2(simulation.defender_x, simulation.defender_y) * App.design_size
-	defender.dimensions.y = projection.defender_height(simulation.defender_y)
-	defender.queue_redraw()
+	while defenders.size() < simulation.defenders.size():
+		defenders.append(_entity("Defender" + str(defenders.size() + 1), "defender", Vector2.ZERO, Vector2.ZERO))
+	while defenders.size() > simulation.defenders.size():
+		var removed: Node2D = defenders.pop_back()
+		remove_child(removed)
+		removed.queue_free()
+	for i in defenders.size():
+		var body: Dictionary = simulation.defenders[i]
+		var sprite: Node2D = defenders[i]
+		sprite.visible = body.active
+		sprite.position = Vector2(body.x, body.y) * App.design_size
+		sprite.dimensions.y = projection.defender_height(body.y)
+		sprite.z_index = int(sprite.position.y)
+		sprite.queue_redraw()
 	# Occlusion follows ground depth, independent of the visual flight height.
 	goal.z_index = int(goal.position.y) - 1
 	keeper.z_index = int(keeper.position.y)
-	defender.z_index = int(defender.position.y)
 	ball.z_index = int(projection.position(simulation.ball.progress).y + projection.radius(simulation.ball.progress) * ball.shadow_contact)
 	if simulation.keeper_raised:
 		keeper.z_index = ball.z_index + 1
@@ -61,9 +72,10 @@ func protected_rects(simulation: RefCounted) -> Array[Rect2]:
 	var result: Array[Rect2] = [projection.goal_rect().grow(projection.frame_width() / 2)]
 	var keeper_size := Vector2(keeper.dimensions.y * App.config.data.gameplay.defender.hitboxWidthToHeight, keeper.dimensions.y)
 	result.append(Rect2(keeper.position - Vector2(keeper_size.x / 2, keeper_size.y), keeper_size))
-	if defender.visible:
-		var defender_size := Vector2(defender.dimensions.y * App.config.data.gameplay.defender.hitboxWidthToHeight, defender.dimensions.y)
-		result.append(Rect2(defender.position - Vector2(defender_size.x / 2, defender_size.y), defender_size))
+	for sprite in defenders:
+		if sprite.visible:
+			var defender_size := Vector2(sprite.dimensions.y * App.config.data.gameplay.defender.hitboxWidthToHeight, sprite.dimensions.y)
+			result.append(Rect2(sprite.position - Vector2(defender_size.x / 2, defender_size.y), defender_size))
 	var radius: float = projection.radius(simulation.ball.progress)
 	result.append(Rect2(ball.position - Vector2.ONE * radius, Vector2.ONE * radius * 2))
 	return result

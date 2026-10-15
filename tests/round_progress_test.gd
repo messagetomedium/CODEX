@@ -54,7 +54,7 @@ func _init() -> void:
 	check(sim.goal_line_outcome(0.5, Vector2(960, rect.position.y)) == "frame", "Crossbar takes precedence over goalkeeper")
 	check(sim.goal_line_outcome(0.37, Vector2(rect.position.x, 450)) == "frame", "Left post is a frame contact")
 	check(sim.goal_line_outcome(0.63, Vector2(rect.end.x, 450)) == "frame", "Right post is a frame contact")
-	check(sim.goal_line_outcome(0.5, Vector2(960, bar_bottom + radius - 0.1)) == "frame", "Ball radius touching the bar is not called a save")
+	check(sim.goal_line_outcome(0.5, Vector2(960, bar_bottom + radius * config.goalFrame.ballContactRadiusFraction - 0.1)) == "frame", "Inner core touching the bar is not called a save")
 	check(sim.goal_line_outcome(0.5, Vector2(960, bar_bottom + radius + 1)) == "caught", "A ball wholly below the bar and above the head is caught with raised hands")
 	check(sim.goal_line_outcome(0.37, Vector2(960, bar_bottom + radius + 1)) == "goal", "An overhead ball scores when the goalkeeper is away")
 	check(sim.goal_line_outcome(0.5, sim.projection.position(1)) == "saved", "A body-height rolling save keeps the ordinary save message")
@@ -62,7 +62,7 @@ func _init() -> void:
 	var voice = load("res://scripts/voice/voice_frame.gd").new()
 	voice.kick_impulse_strength = 1
 	sim.step(2, voice)
-	check(sim.outcome == "frame" and sim.ball.progress == 1 and not sim.keeper_raised, "Maximum starting kick visibly reaches the crossbar, not a phantom keeper")
+	check(sim.outcome == "goal" and sim.ball.progress == 1 and not sim.keeper_raised, "The larger goal admits a strong starting kick when the keeper is away")
 	sim = Simulation.new(config, layout)
 	sim.ball.progress = 0.5
 	sim.step(2, voice)

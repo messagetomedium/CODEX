@@ -34,8 +34,9 @@
       "start": "Начать",
       "retry": "Повторить",
       "menu": "Главное меню",
-      "next": "Следующий уровень",
-      "micRetry": "Повторить подключение"
+      "next": "Следующий раунд",
+      "micRetry": "Повторить подключение",
+      "restartGame": "Сыграть сначала"
     },
     "microphone": {
       "connecting": "Подключаем микрофон…",
@@ -58,7 +59,7 @@
   "goal": {
     "intro": {
       "title": "Забить гол",
-      "objective": "Забей 3 гола за 6 попыток!",
+      "objective": "Пройди 3 раунда: в каждом забей 3 гола за 6 попыток!",
       "instructions": [
         {
           "id": "roll",
@@ -96,7 +97,9 @@
       "round": "Раунд {round}",
       "goals": "Голы: {goals}/{goalTarget}",
       "attempts": "Попытки: {attemptsUsed}/{maxAttempts}",
-      "voice": "Сила голоса"
+      "voice": "Сила голоса",
+      "quietRange": "Тихо: катить",
+      "kickRange": "Резко: удар"
     },
     "event": {
       "goal": {
@@ -207,7 +210,14 @@
             "Попробуй снова — гол впереди!"
           ]
         }
-      }
+      },
+      "roundWinTitle": "Раунд {round} пройден!",
+      "roundWinDescription": "Переходи дальше или попробуй этот раунд ещё раз.",
+      "roundLossDescription": "Раунд {round}: попробуй ещё раз.",
+      "gameWinTitle": "Все три раунда пройдены!",
+      "gameWinDescription": "Игра завершена. Отличная игра голосом!",
+      "totalGoals": "Всего голов: {goals}/{goalTarget}",
+      "totalAttempts": "Попытки в пройденных раундах: {attemptsUsed}/{maxAttempts}"
     },
     "intermediateResult": {
       "title": "Раунд {round} завершён",

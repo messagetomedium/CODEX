@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--url', default='http://127.0.0.1:8765')
-parser.add_argument('--output', default='/workspace/artifacts/matryoshka-task-4')
+parser.add_argument('--output', default='/workspace/artifacts/matryoshka-three-rounds')
 parser.add_argument('--browser', default='/usr/bin/chromium')
 args = parser.parse_args()
 out = Path(args.output).resolve()
@@ -58,7 +58,12 @@ navigator.mediaDevices.getUserMedia = async constraints => {
 
 def meter_fill(png):
     image = Image.open(io.BytesIO(png)).convert('RGB')
-    return sum(1 for x in range(36, 267) for y in range(707, 711)
+    layout = json.loads((Path(__file__).resolve().parents[1] / 'data/config/ui_layout.json').read_text())
+    position, spec = layout['positions']['hud.voiceMeter'], layout['components']['hud']
+    left = int(position['x'] * 1280)
+    top = int((position['y'] + spec['voiceBarOffsetFraction']) * 720)
+    width = int(spec['voiceWidthFraction'] * 1280)
+    return sum(1 for x in range(left, left + width) for y in range(top + 3, top + 7)
                if (lambda c: c[0] > 190 and c[1] > 150 and c[2] < 150)(image.getpixel((x, y))))
 
 
@@ -191,7 +196,7 @@ with sync_playwright() as p:
     assert ball_box(page.screenshot()) == stopped_box, 'Ball kept rolling after voice release'
     reset()
     open_level(); click(640, 495, 350)
-    page.keyboard.press('1')
+    page.keyboard.press('1', delay=80)
     page.keyboard.down('Space'); page.wait_for_timeout(180)
     flight_png = page.screenshot(path=str(out / 'weak-kick-flight.png'))
     page.keyboard.up('Space')
@@ -205,36 +210,37 @@ with sync_playwright() as p:
     page.screenshot(path=str(out / 'weak-kick-landed.png'))
     reset()
 
-    # Six genuine maximum-strength impulses end in frame/defender failures.
+    # Play normal maximum-strength impulses until three goals or six resolved balls.
     # No public test hooks or direct mutation of Godot state are used.
     load(args.url.rstrip('/') + '/?debug=1')
     open_level(); click(640, 495, 600)
-    page.keyboard.press('3')
-    frame_seen = False
+    page.keyboard.press('3', delay=80)
+    attempt_count = 0
     for attempt in range(6):
         page.keyboard.down('Space'); page.wait_for_timeout(120); page.keyboard.up('Space')
         page.wait_for_timeout(1350)
         event_png = page.screenshot(path=str(out / f'event-{attempt+1}.png'))
         assert not final_visible(event_png), 'An individual outcome used the large round-final popup'
-        try:
-            box = ball_box(event_png)
-            if box[2] - box[0] < 45 and box[1] < 216:
-                frame_seen = True
-                (out / 'frame-hit.png').write_bytes(event_png)
-        except AssertionError:
-            pass  # A defender can legitimately cover the intercepted ball.
         page.wait_for_timeout(2700)
-        assert final_visible(page.screenshot()) == (attempt == 5), 'Round final opened before/after the resolved sixth ball'
+        attempt_count = attempt + 1
+        if final_visible(page.screenshot()):
+            assert attempt_count >= 3, 'A round ended before either valid limit'
+            break
+    assert final_visible(page.screenshot()), 'Six resolved balls did not produce a round result'
     final_png = page.screenshot(path=str(out / 'final-loss.png'))
     page.keyboard.down('w'); page.wait_for_timeout(400); page.keyboard.up('w')
     assert final_visible(page.screenshot()), 'Voice input dismissed the round result'
-    click(874, 495, 300)
-    assert final_visible(page.screenshot()), 'Disabled Next action navigated away'
+    image = Image.open(io.BytesIO(page.screenshot())).convert('RGB')
+    next_enabled = all(abs(a-b) < 4 for a, b in zip(image.getpixel((874,480)), (250,246,237)))
+    if not next_enabled:
+        click(874, 495, 300)
+        assert final_visible(page.screenshot()), 'Disabled Next action navigated away'
     page.set_viewport_size({'width': 1024, 'height': 768}); page.wait_for_timeout(600)
     page.screenshot(path=str(out / 'final-4x3.png'))
     page.set_viewport_size({'width': 1280, 'height': 720}); page.wait_for_timeout(600)
-    click(406, 495, 650)
-    assert not final_visible(page.screenshot()), 'Retry repeated an instruction/result overlay'
+    click(874 if next_enabled else 406, 495, 650)
+    assert not final_visible(page.screenshot()), 'Next/Retry repeated an instruction/result overlay'
+    page.screenshot(path=str(out / ('round-2-normal.png' if next_enabled else 'round-1-retry.png')))
     assert page.evaluate('window.__micRequests') == 0, 'Debug round retry requested an audio device'
     assert ball_box(page.screenshot())[2] - ball_box(page.screenshot())[0] > 210, 'Retry did not prepare a fresh foreground ball'
     reset()
@@ -246,8 +252,8 @@ with sync_playwright() as p:
     assert not errors and not bad, errors + bad
     report = {'result': 'passed', 'physical_microphone_tested': False,
               'input': 'Chromium synthetic MediaStream capture; simulated denial/missing/busy',
-              'frame_contact_visible_in_browser': frame_seen, 'full_round_and_retry_tested': True,
+              'full_round_tested': True, 'impulses_to_result': attempt_count, 'result_action_tested': 'next' if next_enabled else 'retry',
               'console': messages, 'errors': errors, 'requests': requests}
     (out / 'browser-log.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
     browser.close()
-    print('BROWSER PASS: six resolved attempts, central final/disabled Next/retry, visible roll/scale/stop/flight arc, synthetic Web Audio RMS/HUD, denied/missing/busy retry, late permission reset, resource cleanup, no monitoring/upload, strict debug opt-in, menu/resize')
+    print('BROWSER PASS: complete round, central result/next-or-retry, visible roll/scale/stop/flight arc, synthetic Web Audio RMS/HUD, denied/missing/busy retry, late permission reset, resource cleanup, no monitoring/upload, strict debug opt-in, menu/resize')

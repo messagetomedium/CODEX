@@ -8,6 +8,9 @@ const VoiceDetector = preload("res://scripts/voice/voice_detector.gd")
 const VoiceFrame = preload("res://scripts/voice/voice_frame.gd")
 const Simulation = preload("res://scripts/goal/logic/goal_simulation.gd")
 const RoundProgress = preload("res://scripts/goal/logic/round_progress.gd")
+const RoundSettings = preload("res://scripts/goal/logic/round_settings.gd")
+const Campaign = preload("res://scripts/goal/logic/campaign_progress.gd")
+const VoiceGuide = preload("res://scripts/ui/voice_meter_guide.gd")
 const Notification = preload("res://scripts/ui/game_notification.gd")
 const Spawner = preload("res://scripts/goal/logic/defender_spawner.gd")
 enum State { INTRO, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR, EVENT, FINAL }
@@ -29,6 +32,8 @@ var round_progress: RefCounted
 var event_notice: Control
 var event_time_left := 0.0
 var microphone_resume_state := State.ACTIVE
+var campaign: RefCounted
+var round_config: Dictionary
 
 func _ready() -> void:
 	if not App.valid:
@@ -36,9 +41,11 @@ func _ready() -> void:
 	debug_input = VoiceFactory.debug_enabled(App.config.data.gameplay)
 	voice_input = VoiceFactory.create(App.config.data.gameplay)
 	detector = VoiceDetector.new(App.config.data.gameplay.microphone, App.config.data.gameplay.kick)
-	round_progress = RoundProgress.new(App.config.data.gameplay)
-	simulation = Simulation.new(App.config.data.gameplay, App.config.data.ui_layout)
-	spawner = Spawner.new(App.config.data.gameplay)
+	campaign = Campaign.new(App.config.data.gameplay)
+	round_config = RoundSettings.for_round(App.config.data.gameplay, campaign.number)
+	round_progress = RoundProgress.new(round_config)
+	simulation = Simulation.new(round_config, App.config.data.ui_layout)
+	spawner = Spawner.new(round_config)
 	world = World.new()
 	world.name = "World"
 	add_child(world)
@@ -88,6 +95,12 @@ func _create_hud() -> void:
 	meter.add_theme_stylebox_override("background", UI.style(Color("#3d604c"), Color.TRANSPARENT, 4))
 	meter.add_theme_stylebox_override("fill", UI.style(UI.ACCENT, Color.TRANSPARENT, 4))
 	hud.add_child(meter)
+	var guide := VoiceGuide.new()
+	guide.name = "VoiceGuide"
+	guide.position = meter.position
+	guide.size = Vector2(meter.size.x, App.design_size.y * App.config.data.ui_layout.components.voiceGuide.heightFraction)
+	hud.add_child(guide)
+	guide.configure(round_config.microphone, App.config.data.ui_layout.components.voiceGuide, meter.size.y)
 
 func _create_status_banner() -> void:
 	var placement: Dictionary = App.config.data.ui_layout.positions.microphoneStatus
@@ -109,7 +122,7 @@ func _create_status_banner() -> void:
 
 func _update_hud(animate: bool = true) -> void:
 	var values: Dictionary = round_progress.values()
-	for id in ["goals", "attempts"]:
+	for id in ["round", "goals", "attempts"]:
 		var label: Label = hud.get_node(id.capitalize())
 		var text: String = App.texts.text("goal.hud." + id, values)
 		if label.text != text:
@@ -120,7 +133,14 @@ func _update_hud(animate: bool = true) -> void:
 func _on_action(id: String) -> void:
 	if id == "menu":
 		App.reset()
-	elif id == "retry" and state == State.FINAL:
+	elif id in ["retry", "next"] and state == State.FINAL:
+		if id == "next":
+			if not campaign.advance():
+				return
+		elif campaign.game_won():
+			campaign.restart()
+		else:
+			campaign.retry_round()
 		var available: bool = voice_input.poll().status == "active"
 		_reset_round_data()
 		if available:
@@ -238,25 +258,38 @@ func _show_final() -> void:
 	status_banner.hide()
 	var values: Dictionary = round_progress.values()
 	var tier: Dictionary = App.config.data["ui.ru"].goal.results.tiers[str(round_progress.goals)]
+	campaign.record(round_progress)
+	var game_won: bool = campaign.game_won()
+	var can_advance: bool = campaign.can_advance()
+	var title: String = App.texts.text("goal.results.gameWinTitle") if game_won else (App.texts.text("goal.results.roundWinTitle", values) if can_advance else str(tier.phrases.pick_random()))
+	var description: String = App.texts.text("goal.results.gameWinDescription") if game_won else App.texts.text("goal.results.roundWinDescription" if can_advance else "goal.results.roundLossDescription", values)
+	var statistics: Array = [App.texts.text("goal.results.goals", values), App.texts.text("goal.results.attempts", values)]
+	if game_won:
+		var totals: Dictionary = campaign.totals(App.config.data.gameplay)
+		statistics = [App.texts.text("goal.results.totalGoals", totals), App.texts.text("goal.results.totalAttempts", totals)]
+	var actions: Array = [
+		{"id": "retry", "label": App.texts.text("common.actions.restartGame" if game_won else "common.actions.retry")},
+		{"id": "menu", "label": App.texts.text("common.actions.menu")},
+	]
+	if not game_won:
+		actions.append({"id": "next", "label": App.texts.text("common.actions.next"), "disabled": not can_advance})
 	overlays.show_info({
-		"kind": "final",
+		"kind": "intermediate" if can_advance else "final",
 		"layoutId": "result",
 		"animationProfile": "final.panel",
-		"title": tier.phrases.pick_random(),
-		"statistics": [App.texts.text("goal.results.goals", values), App.texts.text("goal.results.attempts", values)],
-		"actions": [
-			{"id": "retry", "label": App.texts.text("common.actions.retry")},
-			{"id": "menu", "label": App.texts.text("common.actions.menu")},
-			{"id": "next", "label": App.texts.text("common.actions.next"), "disabled": true},
-		],
+		"title": title,
+		"description": description,
+		"statistics": statistics,
+		"actions": actions,
 	}, "final")
 
 func _reset_round_data() -> void:
 	_clear_event_notice()
 	world.reset_feedback()
-	round_progress = RoundProgress.new(App.config.data.gameplay)
-	simulation = Simulation.new(App.config.data.gameplay, App.config.data.ui_layout)
-	spawner = Spawner.new(App.config.data.gameplay)
+	round_config = RoundSettings.for_round(App.config.data.gameplay, campaign.number)
+	round_progress = RoundProgress.new(round_config)
+	simulation = Simulation.new(round_config, App.config.data.ui_layout)
+	spawner = Spawner.new(round_config)
 	world.present(simulation)
 	microphone_resume_state = State.ACTIVE
 	detector.reset_controls()

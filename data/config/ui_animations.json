@@ -374,6 +374,29 @@
           "value": 1
         }
       }
+    },
+    "hud.round": {
+      "changed": {
+        "durationMs": 260,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.13
+        },
+        "to": {
+          "scale": 1
+        }
+      }
+    },
+    "hud.voiceGuide": {
+      "enter": {
+        "durationMs": 180,
+        "from": {
+          "opacity": 0
+        },
+        "to": {
+          "opacity": 1
+        }
+      }
     }
   }
 }

@@ -42,3 +42,19 @@ locally overrides only the served HTML response to launch an explicit GDScript
 review fixture for catch, goal and winning-final drawing. It uses the real Godot
 mechanics/UI with controlled inputs and keeper placement, not physical speech.
 Normal exported HTML/Pages never selects the review fixture.
+
+
+The three-round campaign uses independent defender slots (1/2/3), selected through
+`round_settings.gd`. `campaign_progress.gd` unlocks the next round only on victory
+and keeps previous victories when retrying a round. The third win shows campaign
+totals for completed runs and Play from start. All changes stay in the same level.
+`keeper_pattern.gd` uses repeating time-based legs/holds on rounds two and three;
+collision samples the exact phase at the goal crossing. Every defender lane is
+clamped in front of the goal and assigned independently. Voice-meter ticks read
+the existing detector thresholds. Microphone processing and latency are unchanged.
+
+The ordinary browser test now plays until the round's actual result (three goals
+or six resolved balls) and tests Next or Retry as offered. The controlled review
+also renders round-two/three crossings, the intermediate result and full game
+completion. Strength selection keys are held for 80 ms so debug polling observes
+them reliably; no game control or diagnostic hook was added to the public URL.

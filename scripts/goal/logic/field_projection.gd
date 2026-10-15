@@ -50,6 +50,11 @@ func frame_width() -> float:
 func hits_frame(center: Vector2, ball_radius: float) -> bool:
 	var rect := goal_rect()
 	var half := frame_width() / 2
+	# The visible rim may graze the frame and still score. Only the inner core
+	# counts as contact; a center outside the mouth is never awarded a goal.
+	ball_radius *= float(settings.goalFrame.ballContactRadiusFraction)
+	if center.x < rect.position.x - half or center.x > rect.end.x + half or center.y < rect.position.y - half:
+		return true
 	var parts := [Rect2(rect.position - Vector2(half, half), Vector2(rect.size.x + 2 * half, 2 * half)), Rect2(rect.position - Vector2(half, half), Vector2(2 * half, rect.size.y + half)), Rect2(Vector2(rect.end.x - half, rect.position.y - half), Vector2(2 * half, rect.size.y + half))]
 	for part: Rect2 in parts:
 		var closest := center.clamp(part.position, part.end)

@@ -34,7 +34,8 @@ for k,v in g['hud'].items():row(f'goal.hud.{k}',v,'Постоянный HUD')
 for event,d in g['event'].items():
     for k,v in d.items():row(f'goal.event.{event}.{k}',v,'Короткое игровое событие')
 for tip in g['tips']:row(f'goal.tips.{tip["id"]}',tip['text'],'Случайная подсказка после гола')
-for k in ('goals','attempts'):row(f'goal.results.{k}',g['results'][k],'Финальная статистика')
+for k,v in g['results'].items():
+    if isinstance(v,str):row(f'goal.results.{k}',v,'Итог раунда / завершение игры')
 for tier,d in g['results']['tiers'].items():
     for i,phrase in enumerate(d['phrases'],1):row(f'goal.results.tiers.{tier}.{i:02d}',phrase,f'Финал: {tier} гол(а/ов), {d["state"]}')
 for k,v in g['intermediateResult'].items():row(f'goal.intermediateResult.{k}',v,'Зарезервировано на будущие раунды')

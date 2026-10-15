@@ -50,9 +50,13 @@ run_godot round --script res://tests/round_progress_test.gd
 run_godot task-4 --script res://tests/task_4_smoke_test.gd
 grep -q 'Round/frame checks: .*failed: 0' build/checks/round.log
 grep -q 'Task 4 integration checks: .*failed: 0' build/checks/task-4.log
+run_godot campaign --script res://tests/campaign_test.gd
+run_godot campaign-scene --script res://tests/campaign_scene_test.gd
+grep -q 'Campaign mechanics checks: .*failed: 0' build/checks/campaign.log
+grep -q 'Campaign scene checks: .*failed: 0' build/checks/campaign-scene.log
 node --test tests/microphone_bridge_test.cjs
 run_godot web --export-release Web build/web/index.html
 for artifact in index.html index.js index.wasm index.pck; do
     test -s "build/web/$artifact"
 done
-echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3/4 integration, round/frame mechanics, voice detector, JS bridge, Web artifacts'
+echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3/4 integration, three-round campaign, soft collisions, voice detector, JS bridge, Web artifacts'
