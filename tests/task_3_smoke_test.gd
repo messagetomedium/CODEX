@@ -94,21 +94,21 @@ func _run() -> void:
 	level.simulation.ball.progress = 0.999
 	source.rms = 0.04
 	tick(level, 20)
-	check(level.state == level.State.RESOLVED and level.simulation.outcome == "goal", "Crossing transitions the same level into a resolved state")
-	check(level.status_title.text == app.texts.text("goal.event.goal.title"), "Existing status banner shows the localized mechanical outcome")
+	check(level.state == level.State.EVENT and level.simulation.outcome == "goal", "Crossing transitions the same level into a resolved state")
+	check(is_instance_valid(level.event_notice) and level.round_progress.goals == 1, "Short event shows the scored outcome with an updated count")
 	check(not is_instance_valid(level.overlays.popup), "Task 3 does not introduce the Task 4 result popup")
 	var final_position: Vector2 = level.world.ball.position
 	keeper = level.simulation.keeper_x
 	source.rms = 0.12
-	tick(level, 200)
+	tick(level, 100)
 	check(level.world.ball.position == final_position and level.simulation.keeper_x == keeper and level.voice_frame.kick_impulse_strength == 0, "Resolved play freezes the world and locks voice controls")
-	check(level.hud.get_node("Attempts").text == app.texts.text("goal.hud.attempts", {"attemptsUsed": 0, "maxAttempts": 6}), "Attempt accounting is reserved for Task 4")
+	check(level.hud.get_node("Attempts").text == app.texts.text("goal.hud.attempts", {"attemptsUsed": 1, "maxAttempts": 6}), "A rolling play plus short kick still consumes one attempt")
 	source.status = "busy"
 	level._process(0.016)
 	level.overlays.popup.action_buttons[0].pressed.emit()
 	level._process(0.016)
 	await frames()
-	check(level.state == level.State.RESOLVED and level.simulation.outcome == "goal", "Microphone recovery cannot revive a resolved ball")
+	check(level.state == level.State.EVENT and level.simulation.outcome == "goal", "Microphone recovery cannot revive a resolved ball")
 	app.reset()
 	await frames()
 	check(current_scene.name == "MainMenu" and source.disposed, "Reset from a resolved play returns to menu and releases audio")

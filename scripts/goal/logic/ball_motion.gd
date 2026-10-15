@@ -11,6 +11,7 @@ var flight_start := 0.0
 var flight_distance := 0.0
 var flight_seconds := 0.0
 var settings: Dictionary
+var projection: RefCounted
 
 func _init(config: Dictionary) -> void:
 	settings = config
@@ -26,6 +27,13 @@ func kick(strength: float) -> void:
 	flight_distance = lerpf(settings.kick.minTravelProgress, settings.kick.maxTravelProgress, strength)
 	flight_seconds = lerpf(settings.kick.minFlightMs, settings.kick.maxFlightMs, strength) / 1000.0
 	flight_arc = lerpf(settings.kick.arcVisualPixelsMin, settings.kick.arcVisualPixelsMax, strength)
+	# Aim remains toward the goal. A close kick may meet the frame, not fly away
+	# above it; frame contact itself is classified at the goal plane by simulation.
+	if projection != null and settings.kick.keepTrajectoryWithinGoalFrame:
+		var at_line := (float(settings.ball.progressAtGoalLine) - progress) / flight_distance
+		if at_line > 0 and at_line < 1:
+			var available: float = projection.position(settings.ball.progressAtGoalLine).y - projection.goal_rect().position.y
+			flight_arc = minf(flight_arc, available / sin(PI * at_line))
 	roll_speed = 0
 
 func advance(delta: float, rolling: float) -> void:

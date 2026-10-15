@@ -362,6 +362,18 @@
           "opacity": 1
         }
       }
+    },
+    "world.goalkeeperCatch": {
+      "impact": {
+        "durationMs": 110,
+        "easing": "ease-out",
+        "from": {
+          "value": 0
+        },
+        "to": {
+          "value": 1
+        }
+      }
     }
   }
 }

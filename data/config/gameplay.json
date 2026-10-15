@@ -27,14 +27,17 @@
     "maxFlightMs": 1350,
     "arcVisualPixelsMin": 80,
     "arcVisualPixelsMax": 350,
-    "requireVolumeAttack": true
+    "requireVolumeAttack": true,
+    "keepTrajectoryWithinGoalFrame": true
   },
   "goalkeeper": {
     "patrolLeftX": 0.37,
     "patrolRightX": 0.63,
     "crossScreenSeconds": 2.9,
     "hitboxWidthFractionOfCanvas": 0.055,
-    "noJump": true
+    "noJump": true,
+    "headTopHeightFraction": 0.955,
+    "raisedHandsWidthRadiusFraction": 0.95
   },
   "defender": {
     "maxSimultaneous": 1,

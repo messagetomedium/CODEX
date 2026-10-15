@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--url', default='http://127.0.0.1:8765')
-parser.add_argument('--output', default='/workspace/artifacts/matryoshka-task-3')
+parser.add_argument('--output', default='/workspace/artifacts/matryoshka-task-4')
 parser.add_argument('--browser', default='/usr/bin/chromium')
 args = parser.parse_args()
 out = Path(args.output).resolve()
@@ -82,6 +82,13 @@ def ball_box(png):
     assert len(largest) > 500, 'Visible ball was absent or too small'
     xs, ys = zip(*largest)
     return (min(xs), min(ys), max(xs), max(ys))
+
+
+def final_visible(png):
+    image = Image.open(io.BytesIO(png)).convert('RGB')
+    points = [(260, 190), (1020, 190), (260, 520), (1020, 520), (400, 330), (880, 330)]
+    return sum(all(abs(a-b) < 4 for a, b in zip(image.getpixel(point), (250, 246, 237)))
+               for point in points) >= 5
 
 
 with sync_playwright() as p:
@@ -197,6 +204,40 @@ with sync_playwright() as p:
     page.wait_for_timeout(850)
     page.screenshot(path=str(out / 'weak-kick-landed.png'))
     reset()
+
+    # Six genuine maximum-strength impulses end in frame/defender failures.
+    # No public test hooks or direct mutation of Godot state are used.
+    load(args.url.rstrip('/') + '/?debug=1')
+    open_level(); click(640, 495, 600)
+    page.keyboard.press('3')
+    frame_seen = False
+    for attempt in range(6):
+        page.keyboard.down('Space'); page.wait_for_timeout(120); page.keyboard.up('Space')
+        page.wait_for_timeout(1350)
+        event_png = page.screenshot(path=str(out / f'event-{attempt+1}.png'))
+        assert not final_visible(event_png), 'An individual outcome used the large round-final popup'
+        try:
+            box = ball_box(event_png)
+            if box[2] - box[0] < 45 and box[1] < 216:
+                frame_seen = True
+                (out / 'frame-hit.png').write_bytes(event_png)
+        except AssertionError:
+            pass  # A defender can legitimately cover the intercepted ball.
+        page.wait_for_timeout(2700)
+        assert final_visible(page.screenshot()) == (attempt == 5), 'Round final opened before/after the resolved sixth ball'
+    final_png = page.screenshot(path=str(out / 'final-loss.png'))
+    page.keyboard.down('w'); page.wait_for_timeout(400); page.keyboard.up('w')
+    assert final_visible(page.screenshot()), 'Voice input dismissed the round result'
+    click(874, 495, 300)
+    assert final_visible(page.screenshot()), 'Disabled Next action navigated away'
+    page.set_viewport_size({'width': 1024, 'height': 768}); page.wait_for_timeout(600)
+    page.screenshot(path=str(out / 'final-4x3.png'))
+    page.set_viewport_size({'width': 1280, 'height': 720}); page.wait_for_timeout(600)
+    click(406, 495, 650)
+    assert not final_visible(page.screenshot()), 'Retry repeated an instruction/result overlay'
+    assert page.evaluate('window.__micRequests') == 0, 'Debug round retry requested an audio device'
+    assert ball_box(page.screenshot())[2] - ball_box(page.screenshot())[0] > 210, 'Retry did not prepare a fresh foreground ball'
+    reset()
     page.set_viewport_size({'width': 1024, 'height': 768})
     page.wait_for_timeout(500)
     page.screenshot(path=str(out / 'menu-4x3.png'))
@@ -205,7 +246,8 @@ with sync_playwright() as p:
     assert not errors and not bad, errors + bad
     report = {'result': 'passed', 'physical_microphone_tested': False,
               'input': 'Chromium synthetic MediaStream capture; simulated denial/missing/busy',
+              'frame_contact_visible_in_browser': frame_seen, 'full_round_and_retry_tested': True,
               'console': messages, 'errors': errors, 'requests': requests}
     (out / 'browser-log.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
     browser.close()
-    print('BROWSER PASS: visible roll/scale/stop/flight arc, synthetic Web Audio RMS/HUD, denied/missing/busy retry, late permission reset, resource cleanup, no monitoring/upload, strict debug opt-in, menu/resize')
+    print('BROWSER PASS: six resolved attempts, central final/disabled Next/retry, visible roll/scale/stop/flight arc, synthetic Web Audio RMS/HUD, denied/missing/busy retry, late permission reset, resource cleanup, no monitoring/upload, strict debug opt-in, menu/resize')

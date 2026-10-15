@@ -6,12 +6,14 @@ var ball: Node2D
 var keeper: Node2D
 var defender: Node2D
 var goal: Node2D
+var feedback_tweens: Array[Tween] = []
 
 func _ready() -> void:
 	var composition: Dictionary = App.config.data.ui_layout.refComposition
 	var layout: Dictionary = App.config.data.ui_layout.components.world
 	var design: Vector2 = App.design_size
 	goal = _entity("GoalMouth", "goal", design * Vector2(composition.goal.x, composition.goal.y), Vector2(design.x * composition.goal.widthFraction, design.y * layout.goalHeight))
+	goal.frame_width = maxf(4, goal.dimensions.x * layout.goalFrameWidthFraction)
 	keeper = _entity("Goalkeeper", "keeper", goal.position, Vector2(0, design.y * layout.keeperHeight))
 	defender = _entity("Defender", "defender", design * Vector2(layout.defenderX, layout.defenderY), Vector2(0, design.y * layout.defenderHeight))
 	ball = _entity("Ball", "ball", design * Vector2(composition.ballAtStart.x, composition.ballAtStart.y), Vector2(design.x * composition.ballAtStart.diameterFractionOfWidth / 2, 0))
@@ -33,6 +35,38 @@ func present(simulation: RefCounted) -> void:
 	keeper.z_index = int(keeper.position.y)
 	defender.z_index = int(defender.position.y)
 	ball.z_index = int(projection.position(simulation.ball.progress).y + projection.radius(simulation.ball.progress) * ball.shadow_contact)
+	if simulation.keeper_raised:
+		keeper.z_index = ball.z_index + 1
+		keeper.catch_offset = ball.position - keeper.position
+		keeper.catch_radius = projection.radius(simulation.ball.progress) * App.config.data.gameplay.goalkeeper.raisedHandsWidthRadiusFraction
+
+func react(outcome: String) -> void:
+	if outcome == "goal":
+		var spec: Dictionary = App.config.data.ui_animations.profiles["world.goalNet"].impact
+		feedback_tweens.append(App.animations.animate_property(goal, ^"net_scale", Vector2(spec.from.scaleX, spec.from.scaleY), Vector2(spec.to.scaleX, spec.to.scaleY), "world.goalNet", "impact"))
+	elif outcome == "caught":
+		var spec: Dictionary = App.config.data.ui_animations.profiles["world.goalkeeperCatch"].impact
+		feedback_tweens.append(App.animations.animate_property(keeper, ^"raise_amount", spec.from.value, spec.to.value, "world.goalkeeperCatch", "impact"))
+
+func reset_feedback() -> void:
+	for tween in feedback_tweens:
+		if tween and tween.is_valid():
+			tween.kill()
+	feedback_tweens.clear()
+	goal.net_scale = Vector2.ONE
+	keeper.raise_amount = 0
+
+func protected_rects(simulation: RefCounted) -> Array[Rect2]:
+	var projection: RefCounted = simulation.projection
+	var result: Array[Rect2] = [projection.goal_rect().grow(projection.frame_width() / 2)]
+	var keeper_size := Vector2(keeper.dimensions.y * App.config.data.gameplay.defender.hitboxWidthToHeight, keeper.dimensions.y)
+	result.append(Rect2(keeper.position - Vector2(keeper_size.x / 2, keeper_size.y), keeper_size))
+	if defender.visible:
+		var defender_size := Vector2(defender.dimensions.y * App.config.data.gameplay.defender.hitboxWidthToHeight, defender.dimensions.y)
+		result.append(Rect2(defender.position - Vector2(defender_size.x / 2, defender_size.y), defender_size))
+	var radius: float = projection.radius(simulation.ball.progress)
+	result.append(Rect2(ball.position - Vector2.ONE * radius, Vector2.ONE * radius * 2))
+	return result
 
 func _entity(id: String, kind: String, location: Vector2, dimensions: Vector2) -> Node2D:
 	var entity := Entity.new()

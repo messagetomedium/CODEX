@@ -15,12 +15,32 @@ var defender_x := 0.0
 var defender_y := 0.0
 var defender_direction := 1
 var outcome := ""
+var keeper_raised := false
 
 func _init(config: Dictionary, layout: Dictionary) -> void:
 	settings = config
 	projection = FieldProjection.new(config, layout)
 	ball = Ball.new(config)
+	ball.projection = projection
 	keeper_x = layout.refComposition.goal.x
+
+func reset_ball() -> void:
+	ball = Ball.new(settings)
+	ball.projection = projection
+	outcome = ""
+	keeper_raised = false
+
+func goal_line_outcome(x: float, center: Vector2) -> String:
+	var line: float = settings.ball.progressAtGoalLine
+	var radius: float = projection.radius(line)
+	if projection.hits_frame(center, radius):
+		return "frame"
+	var keeper_half_width: float = settings.goalkeeper.hitboxWidthFractionOfCanvas * projection.design.x / 2
+	var distance: float = absf(x * projection.design.x - center.x)
+	if distance > keeper_half_width + radius:
+		return "goal"
+	var head_top: float = projection.goal_rect().end.y - projection.layout.components.world.keeperHeight * projection.design.y * settings.goalkeeper.headTopHeightFraction
+	return "caught" if center.y + radius <= head_top else "saved"
 
 func spawn_defender(direction: int, lane_y: float) -> bool:
 	if defender_active or not outcome.is_empty():
@@ -92,9 +112,9 @@ func _advance(dt: float, rolling: float) -> void:
 	elif crossing >= 0:
 		stop_at = crossing
 		var at_line := patrol(old_keeper, old_direction, dt * crossing)
-		var keeper_half_width: float = settings.goalkeeper.hitboxWidthFractionOfCanvas * projection.design.x / 2
-		var distance: float = absf(at_line.x - settings.ball.xNormalized) * projection.design.x
-		outcome = "saved" if distance <= keeper_half_width + projection.radius(line) else "goal"
+		var height_at_line := previous_arc * sin(PI * lerpf(previous_fraction, ball.flight_fraction, crossing)) if was_flying else 0.0
+		outcome = goal_line_outcome(at_line.x, projection.position(line, height_at_line))
+		keeper_raised = outcome == "caught"
 	if stop_at >= 0:
 		# Freeze all entities at the first event, not at the end of the render frame.
 		ball.progress = lerpf(previous_progress, ball.progress, stop_at)

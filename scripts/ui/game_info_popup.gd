@@ -18,7 +18,20 @@ func configure(content: Dictionary) -> void:
 	var layout: Dictionary = App.config.data.ui_layout.components[layout_id]
 	var unit: Vector2 = App.design_size
 	var padding: float = unit.x * layout.paddingFraction
-	UI.label(self, content.get("title", ""), Rect2(padding, unit.y * layout.titleY, size.x - padding * 2, unit.y * layout.titleHeight), 34)
+	var result: bool = content.get("kind", "") in ["final", "intermediate"]
+	var title := UI.label(self, content.get("title", ""), Rect2(padding, unit.y * layout.titleY, size.x - padding * 2, unit.y * layout.titleHeight), 44 if result else 34)
+	if result:
+		App.animations.play(title, "final.headline")
+		var statistics := Control.new()
+		statistics.name = "Statistics"
+		statistics.position = Vector2(padding, unit.y * layout.statsY)
+		statistics.size = Vector2(size.x - padding * 2, unit.y * (layout.statHeight * 2 + layout.statGap))
+		statistics.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(statistics)
+		var rows: Array = content.get("statistics", [])
+		for i in rows.size():
+			UI.label(statistics, rows[i], Rect2(0, unit.y * i * (layout.statHeight + layout.statGap), statistics.size.x, unit.y * layout.statHeight), 32)
+		App.animations.play(statistics, "final.stats")
 	UI.label(self, content.get("description", ""), Rect2(padding, unit.y * layout.objectiveY, size.x - padding * 2, unit.y * layout.objectiveHeight), 28)
 	if not compact:
 		var instructions: Array = content.instructionItems
@@ -44,10 +57,22 @@ func configure(content: Dictionary) -> void:
 			App.animations.play(icon, "intro.visual.icon")
 	var actions: Array = content.get("actions", [])
 	var action_width: float = unit.x * layout.actionWidth
-	var total_width: float = actions.size() * action_width
+	var gap: float = unit.x * layout.get("actionGapFraction", 0)
+	var total_width: float = actions.size() * action_width + max(0, actions.size() - 1) * gap
+	var action_group := Control.new()
+	action_group.name = "Actions"
+	action_group.position = Vector2((size.x - total_width) / 2, unit.y * layout.actionY)
+	action_group.size = Vector2(total_width, unit.y * layout.actionHeight)
+	add_child(action_group)
 	for i in actions.size():
 		var action: Dictionary = actions[i]
-		var button := UI.button(self, action.label, Rect2((size.x - total_width) / 2 + i * action_width, unit.y * layout.actionY, action_width, unit.y * layout.actionHeight), true)
+		var button := UI.button(action_group, action.label, Rect2(i * (action_width + gap), 0, action_width, unit.y * layout.actionHeight), i == 0)
 		button.name = action.id.capitalize()
-		button.pressed.connect(func(): action_requested.emit(action.id))
+		button.disabled = action.get("disabled", false)
+		if button.disabled:
+			button.modulate.a = 0.48
+		else:
+			button.pressed.connect(func(): action_requested.emit(action.id))
 		action_buttons.append(button)
+	if result:
+		App.animations.play(action_group, "final.actions")

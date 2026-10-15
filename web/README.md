@@ -30,5 +30,15 @@ Projection, ball motion and swept collisions are deterministic RefCounted classe
 random defender scheduling is separate, and `goal_world.gd` only draws their state.
 Intro/permission/error overlays and resolved plays stop both simulation and spawning.
 Microphone recovery preserves the same ball, including a flight paused in midair.
-The Task 3 status banner reports the outcome; Reset starts a new manual test.
-Scoring, automatic subsequent attempts and final results remain Task 4.
+Task 4 adds RoundProgress (first-motion charging, three goals/six resolved balls),
+safe compact feedback and automatic next balls. Round finals use the same central
+panel dimensions as the intro. Retry reuses working audio without an intro;
+a disconnected device reconnects from the retry click. Frame contacts and raised-
+hands catches are distinct from ordinary saves. Microphone timing stays unchanged.
+
+`python3 tests/web_smoke_test.py` also plays a full six-failure debug round,
+checks the large central final, disabled Next and Retry. `python3 tests/visual_review.py`
+locally overrides only the served HTML response to launch an explicit GDScript
+review fixture for catch, goal and winning-final drawing. It uses the real Godot
+mechanics/UI with controlled inputs and keeper placement, not physical speech.
+Normal exported HTML/Pages never selects the review fixture.

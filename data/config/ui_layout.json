@@ -18,8 +18,8 @@
       "anchor": "center",
       "centerX": 0.5,
       "centerY": 0.5,
-      "maxWidthFraction": 0.52,
-      "maxHeightFraction": 0.56
+      "maxWidthFraction": 0.64,
+      "maxHeightFraction": 0.62
     },
     "microphoneError": {
       "anchor": "center",
@@ -82,7 +82,8 @@
           "y": 0.22
         }
       ],
-      "maxWidthFraction": 0.36
+      "maxWidthFraction": 0.36,
+      "heightFraction": 0.19
     },
     "fail": {
       "candidates": [
@@ -107,8 +108,18 @@
           "y": 0.77
         }
       ],
-      "maxWidthFraction": 0.25
-    }
+      "maxWidthFraction": 0.25,
+      "heightFraction": 0.12
+    },
+    "paddingPixels": 16,
+    "shrinkScales": [
+      1,
+      0.9,
+      0.8,
+      0.7,
+      0.6
+    ],
+    "fallbackScanStep": 0.04
   },
   "protectedElements": [
     "goalMouth",
@@ -186,7 +197,8 @@
       "defenderY": 0.7,
       "defenderHeight": 0.3,
       "keeperHeight": 0.15,
-      "goalHeight": 0.205
+      "goalHeight": 0.205,
+      "goalFrameWidthFraction": 0.022
     },
     "diagnostic": {
       "paddingFraction": 0.025,
@@ -213,6 +225,28 @@
       "titleHeight": 0.035,
       "textY": 0.05,
       "textHeight": 0.06
+    },
+    "result": {
+      "paddingFraction": 0.025,
+      "titleY": 0.04,
+      "titleHeight": 0.11,
+      "objectiveY": 0.16,
+      "objectiveHeight": 0.045,
+      "statsY": 0.225,
+      "statHeight": 0.055,
+      "statGap": 0.02,
+      "actionY": 0.415,
+      "actionWidth": 0.17,
+      "actionHeight": 0.065,
+      "actionGapFraction": 0.0125
+    },
+    "notification": {
+      "paddingFraction": 0.015,
+      "titleHeightFraction": 0.3,
+      "scoreHeightFraction": 0.2,
+      "tipHeightFraction": 0.4,
+      "failTitleHeightFraction": 0.5,
+      "contentInsetFraction": 0.05
     }
   }
 }

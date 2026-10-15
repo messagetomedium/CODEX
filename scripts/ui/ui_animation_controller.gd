@@ -76,3 +76,15 @@ func follow_value(node: Control, property: NodePath, target: float, profile_id: 
 	var tween := node.create_tween()
 	node.set_meta("ui_follow_tween", tween)
 	tween.tween_property(node, property, target, duration).set_trans(Tween.TRANS_LINEAR)
+
+func animate_property(node: Node, property: NodePath, initial: Variant, final: Variant, profile_id: String, phase: String) -> Tween:
+	var spec: Dictionary = profiles[profile_id][phase]
+	node.set_indexed(property, initial)
+	var duration := float(spec.get("durationMs", 0)) / 1000.0
+	if duration <= 0:
+		node.set_indexed(property, final)
+		return null
+	var tween := node.create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(_ease(spec.get("easing", "ease-out")))
+	tween.tween_property(node, property, final, duration).set_delay(float(spec.get("delayMs", 0)) / 1000.0)
+	return tween

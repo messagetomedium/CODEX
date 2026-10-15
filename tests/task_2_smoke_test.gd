@@ -62,7 +62,7 @@ func _run() -> void:
 	check(level.status_banner.visible and level.meter.value > 0, "Active microphone displays measured loudness")
 	check(level.voice_frame.rolling_intensity > 0, "Source-independent VoiceFrame drives the gameplay stage")
 	check(level.world.get_instance_id() == world_id and level.world.ball.position.y < ball_position.y, "Task 3 moves the ball within the existing field")
-	check(level.hud.get_node("Attempts").text == app.texts.text("goal.hud.attempts", {"attemptsUsed": 0, "maxAttempts": 6}), "Microphone measurement consumes no attempts")
+	check(level.hud.get_node("Attempts").text == app.texts.text("goal.hud.attempts", {"attemptsUsed": 1, "maxAttempts": 6}), "First voice-driven movement consumes exactly one attempt")
 	source.status = "denied"
 	source.error_code = "NotAllowedError"
 	await frames()

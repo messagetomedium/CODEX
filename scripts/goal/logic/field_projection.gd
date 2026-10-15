@@ -38,3 +38,21 @@ func defender_rect(x: float, lane_y: float) -> Rect2:
 	var full_size := Vector2(h * settings.defender.hitboxWidthToHeight, h)
 	var inset: Vector2 = full_size * settings.defender.hitboxInsetFraction
 	return Rect2(Vector2(x * design.x, lane_y * design.y) - Vector2(full_size.x / 2, h) + inset, full_size - inset * 2)
+
+func goal_rect() -> Rect2:
+	var goal: Dictionary = layout.refComposition.goal
+	var size := Vector2(goal.widthFraction * design.x, layout.components.world.goalHeight * design.y)
+	return Rect2(Vector2(goal.x * design.x - size.x / 2, goal.y * design.y - size.y), size)
+
+func frame_width() -> float:
+	return maxf(4, goal_rect().size.x * layout.components.world.goalFrameWidthFraction)
+
+func hits_frame(center: Vector2, ball_radius: float) -> bool:
+	var rect := goal_rect()
+	var half := frame_width() / 2
+	var parts := [Rect2(rect.position - Vector2(half, half), Vector2(rect.size.x + 2 * half, 2 * half)), Rect2(rect.position - Vector2(half, half), Vector2(2 * half, rect.size.y + half)), Rect2(Vector2(rect.end.x - half, rect.position.y - half), Vector2(2 * half, rect.size.y + half))]
+	for part: Rect2 in parts:
+		var closest := center.clamp(part.position, part.end)
+		if center.distance_squared_to(closest) <= ball_radius * ball_radius:
+			return true
+	return false

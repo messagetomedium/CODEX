@@ -7,8 +7,10 @@ const VoiceFactory = preload("res://scripts/voice/voice_input_factory.gd")
 const VoiceDetector = preload("res://scripts/voice/voice_detector.gd")
 const VoiceFrame = preload("res://scripts/voice/voice_frame.gd")
 const Simulation = preload("res://scripts/goal/logic/goal_simulation.gd")
+const RoundProgress = preload("res://scripts/goal/logic/round_progress.gd")
+const Notification = preload("res://scripts/ui/game_notification.gd")
 const Spawner = preload("res://scripts/goal/logic/defender_spawner.gd")
-enum State { INTRO, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR, RESOLVED }
+enum State { INTRO, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR, EVENT, FINAL }
 var state := State.INTRO
 var world: Node2D
 var overlays: Control
@@ -23,6 +25,10 @@ var simulation: RefCounted
 var spawner: RefCounted
 var status_title: Label
 var status_hint: Label
+var round_progress: RefCounted
+var event_notice: Control
+var event_time_left := 0.0
+var microphone_resume_state := State.ACTIVE
 
 func _ready() -> void:
 	if not App.valid:
@@ -30,6 +36,7 @@ func _ready() -> void:
 	debug_input = VoiceFactory.debug_enabled(App.config.data.gameplay)
 	voice_input = VoiceFactory.create(App.config.data.gameplay)
 	detector = VoiceDetector.new(App.config.data.gameplay.microphone, App.config.data.gameplay.kick)
+	round_progress = RoundProgress.new(App.config.data.gameplay)
 	simulation = Simulation.new(App.config.data.gameplay, App.config.data.ui_layout)
 	spawner = Spawner.new(App.config.data.gameplay)
 	world = World.new()
@@ -100,20 +107,38 @@ func _create_status_banner() -> void:
 	status_hint = UI.label(status_banner, App.texts.text("common.microphone.debugHint" if debug_input else "common.microphone.stageHint"), Rect2(0, App.design_size.y * layout.textY, status_banner.size.x, App.design_size.y * layout.textHeight), 22)
 	status_banner.hide()
 
+func _update_hud(animate: bool = true) -> void:
+	var values: Dictionary = round_progress.values()
+	for id in ["goals", "attempts"]:
+		var label: Label = hud.get_node(id.capitalize())
+		var text: String = App.texts.text("goal.hud." + id, values)
+		if label.text != text:
+			label.text = text
+			if animate:
+				App.animations.play(label, "hud." + id, "changed")
+
 func _on_action(id: String) -> void:
 	if id == "menu":
 		App.reset()
+	elif id == "retry" and state == State.FINAL:
+		var available: bool = voice_input.poll().status == "active"
+		_reset_round_data()
+		if available:
+			state = State.TRANSITION
+			overlays.dismiss(_activate_input)
+		else:
+			# A fresh permission request stays in the user's button gesture.
+			_request_microphone()
 	elif (id == "start" and state == State.INTRO) or (id == "mic_retry" and state == State.MIC_ERROR):
 		_request_microphone()
 
 func _request_microphone() -> void:
-	var retrying := state == State.MIC_ERROR
+	var retrying := state != State.INTRO
 	state = State.MIC_REQUEST
 	detector.reset_controls()
 	voice_frame = VoiceFrame.new()
 	status_banner.hide()
 	App.animations.follow_value(meter, ^"value", 0, "hud.voiceMeter")
-	# Keep the permission request in the button handler, before any exit Tween.
 	voice_input.start()
 	if retrying:
 		overlays.show_info({
@@ -139,28 +164,110 @@ func _process(delta: float) -> void:
 		if state == State.ACTIVE:
 			spawner.step(delta, simulation)
 			simulation.step(delta, voice_frame)
+			if round_progress.begin_movement(simulation.ball.has_moved):
+				_update_hud()
 			world.present(simulation)
 			if not simulation.outcome.is_empty():
 				_show_outcome()
-	elif state in [State.MIC_REQUEST, State.TRANSITION, State.ACTIVE, State.RESOLVED] and raw.status != "pending":
+		elif state == State.EVENT:
+			event_time_left -= maxf(0, delta)
+			if event_time_left <= event_notice.exit_seconds():
+				event_notice.begin_exit()
+			if event_time_left <= 0:
+				_finish_event()
+	elif state in [State.MIC_REQUEST, State.TRANSITION, State.ACTIVE, State.EVENT] and raw.status != "pending":
 		_show_microphone_error(str(raw.status), str(raw.errorCode))
 
 func _activate_input() -> void:
 	detector.reset_controls()
+	voice_frame = VoiceFrame.new()
+	if microphone_resume_state == State.EVENT:
+		state = State.EVENT
+		event_notice.show()
+		return
 	state = State.ACTIVE
 	status_banner.show()
 	App.animations.play(status_banner, "microphone.status")
-	if not simulation.outcome.is_empty():
-		_show_outcome()
 
 func _show_outcome() -> void:
-	state = State.RESOLVED
+	if not round_progress.resolve(simulation.outcome):
+		return
+	state = State.EVENT
 	detector.reset_controls()
 	voice_frame = VoiceFrame.new()
-	status_title.text = App.texts.text("goal.event." + simulation.outcome + ".title")
-	status_hint.text = App.texts.text("goal.mechanics.resolvedHint")
+	status_banner.hide()
+	_update_hud()
+	event_notice = Notification.new()
+	event_notice.name = "GameNotification"
+	hud.get_parent().add_child(event_notice)
+	var tips: Array = App.config.data["ui.ru"].goal.tips
+	event_notice.configure(simulation.outcome, round_progress.values(), str(tips.pick_random().text), _protected_rects())
+	event_time_left = float(App.config.data.gameplay.eventFeedback.durationMs) / 1000.0
+	world.react(simulation.outcome)
+
+func _protected_rects() -> Array[Rect2]:
+	var result: Array[Rect2] = world.protected_rects(simulation)
+	for item in hud.get_children():
+		if item is Control and item.visible:
+			result.append(item.get_global_rect())
+	result.append(App.reset_button.get_global_rect())
+	return result
+
+func _clear_event_notice() -> void:
+	if is_instance_valid(event_notice):
+		event_notice.get_parent().remove_child(event_notice)
+		event_notice.queue_free()
+		event_notice = null
+
+func _finish_event() -> void:
+	_clear_event_notice()
+	world.reset_feedback()
+	if round_progress.finished:
+		_show_final()
+		return
+	round_progress.next_ball()
+	simulation.reset_ball()
+	world.present(simulation)
+	microphone_resume_state = State.ACTIVE
+	_activate_input()
+
+func _show_final() -> void:
+	state = State.FINAL
+	detector.reset_controls()
+	voice_frame = VoiceFrame.new()
+	status_banner.hide()
+	var values: Dictionary = round_progress.values()
+	var tier: Dictionary = App.config.data["ui.ru"].goal.results.tiers[str(round_progress.goals)]
+	overlays.show_info({
+		"kind": "final",
+		"layoutId": "result",
+		"animationProfile": "final.panel",
+		"title": tier.phrases.pick_random(),
+		"statistics": [App.texts.text("goal.results.goals", values), App.texts.text("goal.results.attempts", values)],
+		"actions": [
+			{"id": "retry", "label": App.texts.text("common.actions.retry")},
+			{"id": "menu", "label": App.texts.text("common.actions.menu")},
+			{"id": "next", "label": App.texts.text("common.actions.next"), "disabled": true},
+		],
+	}, "final")
+
+func _reset_round_data() -> void:
+	_clear_event_notice()
+	world.reset_feedback()
+	round_progress = RoundProgress.new(App.config.data.gameplay)
+	simulation = Simulation.new(App.config.data.gameplay, App.config.data.ui_layout)
+	spawner = Spawner.new(App.config.data.gameplay)
+	world.present(simulation)
+	microphone_resume_state = State.ACTIVE
+	detector.reset_controls()
+	voice_frame = VoiceFrame.new()
+	_update_hud()
 
 func _show_microphone_error(mic_status: String, code: String) -> void:
+	if state in [State.ACTIVE, State.EVENT]:
+		microphone_resume_state = state
+	if is_instance_valid(event_notice):
+		event_notice.hide()
 	state = State.MIC_ERROR
 	detector.reset_controls()
 	voice_frame = VoiceFrame.new()

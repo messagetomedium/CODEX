@@ -38,9 +38,11 @@ static func button(parent: Node, content: String, rect: Rect2, primary: bool = f
 	node.add_theme_color_override("font_color", INK)
 	node.add_theme_color_override("font_hover_color", INK)
 	node.add_theme_color_override("font_pressed_color", INK)
+	node.add_theme_color_override("font_disabled_color", INK)
 	var fill := ACCENT if primary else PAPER
 	node.add_theme_stylebox_override("normal", style(fill, INK))
 	node.add_theme_stylebox_override("hover", style(fill.lightened(0.1), INK))
 	node.add_theme_stylebox_override("pressed", style(fill.darkened(0.08), INK))
+	node.add_theme_stylebox_override("disabled", style(PAPER.darkened(0.08), INK))
 	parent.add_child(node)
 	return node
