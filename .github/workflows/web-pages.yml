@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.5.2
+    env:
+      # The image installs templates under /root; Actions changes HOME.
+      XDG_DATA_HOME: /root/.local/share
+      XDG_CONFIG_HOME: /root/.config
     steps:
       - uses: actions/checkout@v4
       - name: Install validation dependency
