@@ -1,5 +1,5 @@
 extends Node2D
-## Static 2.5D composition. Individual entities can be replaced independently.
+## Fixed camera and replaceable flat entities; mechanics live in the pure model.
 
 const Entity = preload("res://scripts/goal/world_entity.gd")
 var ball: Node2D
@@ -15,6 +15,24 @@ func _ready() -> void:
 	keeper = _entity("Goalkeeper", "keeper", goal.position, Vector2(0, design.y * layout.keeperHeight))
 	defender = _entity("Defender", "defender", design * Vector2(layout.defenderX, layout.defenderY), Vector2(0, design.y * layout.defenderHeight))
 	ball = _entity("Ball", "ball", design * Vector2(composition.ballAtStart.x, composition.ballAtStart.y), Vector2(design.x * composition.ballAtStart.diameterFractionOfWidth / 2, 0))
+	ball.shadow_contact = App.config.data.gameplay.ball.shadowContactRadiusFraction
+
+func present(simulation: RefCounted) -> void:
+	var projection: RefCounted = simulation.projection
+	ball.position = projection.position(simulation.ball.progress, simulation.ball.height())
+	ball.scale = Vector2.ONE * projection.ball_scale(simulation.ball.progress)
+	ball.shadow_drop = simulation.ball.height() / ball.scale.y
+	ball.queue_redraw()
+	keeper.position.x = simulation.keeper_x * App.design_size.x
+	defender.visible = simulation.defender_active
+	defender.position = Vector2(simulation.defender_x, simulation.defender_y) * App.design_size
+	defender.dimensions.y = projection.defender_height(simulation.defender_y)
+	defender.queue_redraw()
+	# Occlusion follows ground depth, independent of the visual flight height.
+	goal.z_index = int(goal.position.y) - 1
+	keeper.z_index = int(keeper.position.y)
+	defender.z_index = int(defender.position.y)
+	ball.z_index = int(projection.position(simulation.ball.progress).y + projection.radius(simulation.ball.progress) * ball.shadow_contact)
 
 func _entity(id: String, kind: String, location: Vector2, dimensions: Vector2) -> Node2D:
 	var entity := Entity.new()

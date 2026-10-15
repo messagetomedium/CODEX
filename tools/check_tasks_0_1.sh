@@ -42,9 +42,13 @@ run_godot task-2 --script res://tests/task_2_smoke_test.gd
 grep -q 'Voice detector checks: .*failed: 0' build/checks/voice.log
 grep -q 'Voice detector checks: .*failed: 0' build/checks/voice-debug.log
 grep -q 'Task 2 integration checks: .*failed: 0' build/checks/task-2.log
+run_godot mechanics --script res://tests/goal_simulation_test.gd
+run_godot task-3 --script res://tests/task_3_smoke_test.gd
+grep -q 'Goal simulation checks: .*failed: 0' build/checks/mechanics.log
+grep -q 'Task 3 integration checks: .*failed: 0' build/checks/task-3.log
 node --test tests/microphone_bridge_test.cjs
 run_godot web --export-release Web build/web/index.html
 for artifact in index.html index.js index.wasm index.pck; do
     test -s "build/web/$artifact"
 done
-echo 'PASS: handoff, Godot import, config smoke, Task 1/2 integration, voice detector, JS bridge, Web artifacts'
+echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3 integration, mechanics, voice detector, JS bridge, Web artifacts'

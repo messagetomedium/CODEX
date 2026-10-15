@@ -60,8 +60,8 @@ func _run() -> void:
 	await create_timer(0.5).timeout
 	check(level.state == level.State.ACTIVE and not is_instance_valid(level.overlays.popup), "Granted audio closes intro without a new screen")
 	check(level.status_banner.visible and level.meter.value > 0, "Active microphone displays measured loudness")
-	check(level.voice_frame.rolling_intensity > 0, "Source-independent VoiceFrame is available for the future gameplay stage")
-	check(level.world.get_instance_id() == world_id and level.world.ball.position == ball_position, "Task 2 preserves the existing static field")
+	check(level.voice_frame.rolling_intensity > 0, "Source-independent VoiceFrame drives the gameplay stage")
+	check(level.world.get_instance_id() == world_id and level.world.ball.position.y < ball_position.y, "Task 3 moves the ball within the existing field")
 	check(level.hud.get_node("Attempts").text == app.texts.text("goal.hud.attempts", {"attemptsUsed": 0, "maxAttempts": 6}), "Microphone measurement consumes no attempts")
 	source.status = "denied"
 	source.error_code = "NotAllowedError"

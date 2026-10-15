@@ -15,7 +15,9 @@
     "rollingTargetTravelSecondsAtFastQuietVoice": 4.0,
     "rollingMinProgressPerSecond": 0.07,
     "rollingMaxProgressPerSecond": 0.25,
-    "stopInertiaMs": 100
+    "stopInertiaMs": 100,
+    "scaleAtGoalLine": 0.16,
+    "shadowContactRadiusFraction": 0.88
   },
   "kick": {
     "cooldownMs": 450,
@@ -42,7 +44,8 @@
     "laneYNormalizedMin": 0.42,
     "laneYNormalizedMax": 0.72,
     "hitboxInsetFraction": 0.12,
-    "allowEitherDirection": true
+    "allowEitherDirection": true,
+    "hitboxWidthToHeight": 0.67
   },
   "microphone": {
     "rmsWindowMs": 35,
@@ -89,5 +92,8 @@
       0.085,
       0.12
     ]
+  },
+  "simulation": {
+    "maxStepSeconds": 0.004166666666666667
   }
 }

@@ -1,4 +1,4 @@
-"""Web microphone integration with Chromium's synthetic capture, never a real mic."""
+"""Web microphone and mechanics integration; synthetic capture, never a real mic."""
 import argparse
 import io
 import json
@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--url', default='http://127.0.0.1:8765')
-parser.add_argument('--output', default='/workspace/artifacts/matryoshka-task-2')
+parser.add_argument('--output', default='/workspace/artifacts/matryoshka-task-3')
 parser.add_argument('--browser', default='/usr/bin/chromium')
 args = parser.parse_args()
 out = Path(args.output).resolve()
@@ -60,6 +60,28 @@ def meter_fill(png):
     image = Image.open(io.BytesIO(png)).convert('RGB')
     return sum(1 for x in range(36, 267) for y in range(707, 711)
                if (lambda c: c[0] > 190 and c[1] > 150 and c[2] < 150)(image.getpixel((x, y))))
+
+
+def ball_box(png):
+    """Largest connected cream-colored shape in the field is the visible ball."""
+    image = Image.open(io.BytesIO(png)).convert('RGB')
+    pixels = image.load()
+    pending = {(x, y) for x in range(450, 831) for y in range(190, 719)
+               if all(abs(a - b) <= 2 for a, b in zip(pixels[x, y], (245, 237, 218)))}
+    largest = []
+    while pending:
+        seed = pending.pop()
+        component, stack = [seed], [seed]
+        while stack:
+            x, y = stack.pop()
+            for point in ((x-1, y), (x+1, y), (x, y-1), (x, y+1)):
+                if point in pending:
+                    pending.remove(point); stack.append(point); component.append(point)
+        if len(component) > len(largest):
+            largest = component
+    assert len(largest) > 500, 'Visible ball was absent or too small'
+    xs, ys = zip(*largest)
+    return (min(xs), min(ys), max(xs), max(ys))
 
 
 with sync_playwright() as p:
@@ -147,13 +169,33 @@ with sync_playwright() as p:
     assert all(r['method'] == 'GET' for r in requests), 'Unexpected outgoing POST/upload'
 
     load(args.url.rstrip('/') + '/?debug=1')
-    open_level(); click(640, 495, 600)
+    open_level(); click(640, 495, 350)
+    ready_box = ball_box(page.screenshot())
     assert page.evaluate('window.__micRequests') == 0, 'Explicit debug mode requested a real microphone'
-    page.keyboard.down('w'); page.wait_for_timeout(700)
+    page.keyboard.down('w'); page.wait_for_timeout(400)
     debug = page.screenshot(path=str(out / 'debug-input.png'))
     assert meter_fill(debug) > 5, 'Explicit keyboard debug did not drive the meter'
+    rolled_box = ball_box(debug)
+    assert rolled_box[0] > ready_box[0] and rolled_box[1] < ready_box[1], 'Rolling did not visibly advance and shrink the ball'
     page.keyboard.up('w'); page.wait_for_timeout(700)
     assert meter_fill(page.screenshot()) == 0, 'Debug key release did not return to silence'
+    stopped_box = ball_box(page.screenshot())
+    page.wait_for_timeout(250)
+    assert ball_box(page.screenshot()) == stopped_box, 'Ball kept rolling after voice release'
+    reset()
+    open_level(); click(640, 495, 350)
+    page.keyboard.press('1')
+    page.keyboard.down('Space'); page.wait_for_timeout(180)
+    flight_png = page.screenshot(path=str(out / 'weak-kick-flight.png'))
+    page.keyboard.up('Space')
+    flight_box = ball_box(flight_png)
+    scale = (flight_box[2] - flight_box[0]) / (ready_box[2] - ready_box[0])
+    progress = (1 - scale) / 0.84
+    ground_center_y = 604.8 + (341.55 - 604.8) * progress
+    visible_center_y = (flight_box[1] + flight_box[3]) / 2
+    assert ground_center_y - visible_center_y > 30, 'Kick had no visible arc above its ground projection'
+    page.wait_for_timeout(850)
+    page.screenshot(path=str(out / 'weak-kick-landed.png'))
     reset()
     page.set_viewport_size({'width': 1024, 'height': 768})
     page.wait_for_timeout(500)
@@ -166,4 +208,4 @@ with sync_playwright() as p:
               'console': messages, 'errors': errors, 'requests': requests}
     (out / 'browser-log.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
     browser.close()
-    print('BROWSER PASS: synthetic Web Audio RMS/HUD, denied/missing/busy retry, late permission reset, resource cleanup, no monitoring/upload, strict debug opt-in, menu/resize')
+    print('BROWSER PASS: visible roll/scale/stop/flight arc, synthetic Web Audio RMS/HUD, denied/missing/busy retry, late permission reset, resource cleanup, no monitoring/upload, strict debug opt-in, menu/resize')

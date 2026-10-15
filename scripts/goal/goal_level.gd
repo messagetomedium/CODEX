@@ -6,7 +6,9 @@ const UI = preload("res://scripts/ui/ui_factory.gd")
 const VoiceFactory = preload("res://scripts/voice/voice_input_factory.gd")
 const VoiceDetector = preload("res://scripts/voice/voice_detector.gd")
 const VoiceFrame = preload("res://scripts/voice/voice_frame.gd")
-enum State { INTRO, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR }
+const Simulation = preload("res://scripts/goal/logic/goal_simulation.gd")
+const Spawner = preload("res://scripts/goal/logic/defender_spawner.gd")
+enum State { INTRO, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR, RESOLVED }
 var state := State.INTRO
 var world: Node2D
 var overlays: Control
@@ -17,6 +19,10 @@ var voice_input: RefCounted
 var detector: RefCounted
 var voice_frame = VoiceFrame.new()
 var debug_input := false
+var simulation: RefCounted
+var spawner: RefCounted
+var status_title: Label
+var status_hint: Label
 
 func _ready() -> void:
 	if not App.valid:
@@ -24,6 +30,8 @@ func _ready() -> void:
 	debug_input = VoiceFactory.debug_enabled(App.config.data.gameplay)
 	voice_input = VoiceFactory.create(App.config.data.gameplay)
 	detector = VoiceDetector.new(App.config.data.gameplay.microphone, App.config.data.gameplay.kick)
+	simulation = Simulation.new(App.config.data.gameplay, App.config.data.ui_layout)
+	spawner = Spawner.new(App.config.data.gameplay)
 	world = World.new()
 	world.name = "World"
 	add_child(world)
@@ -88,8 +96,8 @@ func _create_status_banner() -> void:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel", UI.style(UI.PAPER))
 	status_banner.add_child(panel)
-	UI.label(status_banner, App.texts.text("common.microphone.debugTitle" if debug_input else "common.microphone.activeTitle"), Rect2(0, App.design_size.y * layout.titleY, status_banner.size.x, App.design_size.y * layout.titleHeight), 26)
-	UI.label(status_banner, App.texts.text("common.microphone.debugHint" if debug_input else "common.microphone.stageHint"), Rect2(0, App.design_size.y * layout.textY, status_banner.size.x, App.design_size.y * layout.textHeight), 22)
+	status_title = UI.label(status_banner, App.texts.text("common.microphone.debugTitle" if debug_input else "common.microphone.activeTitle"), Rect2(0, App.design_size.y * layout.titleY, status_banner.size.x, App.design_size.y * layout.titleHeight), 26)
+	status_hint = UI.label(status_banner, App.texts.text("common.microphone.debugHint" if debug_input else "common.microphone.stageHint"), Rect2(0, App.design_size.y * layout.textY, status_banner.size.x, App.design_size.y * layout.textHeight), 22)
 	status_banner.hide()
 
 func _on_action(id: String) -> void:
@@ -128,7 +136,13 @@ func _process(delta: float) -> void:
 			overlays.dismiss(_activate_input)
 		voice_frame = detector.sample(float(raw.rms), float(raw.peak), int(raw.timestamp), delta, state == State.ACTIVE)
 		App.animations.follow_value(meter, ^"value", voice_frame.normalized_loudness * 100, "hud.voiceMeter")
-	elif state in [State.MIC_REQUEST, State.TRANSITION, State.ACTIVE] and raw.status != "pending":
+		if state == State.ACTIVE:
+			spawner.step(delta, simulation)
+			simulation.step(delta, voice_frame)
+			world.present(simulation)
+			if not simulation.outcome.is_empty():
+				_show_outcome()
+	elif state in [State.MIC_REQUEST, State.TRANSITION, State.ACTIVE, State.RESOLVED] and raw.status != "pending":
 		_show_microphone_error(str(raw.status), str(raw.errorCode))
 
 func _activate_input() -> void:
@@ -136,6 +150,15 @@ func _activate_input() -> void:
 	state = State.ACTIVE
 	status_banner.show()
 	App.animations.play(status_banner, "microphone.status")
+	if not simulation.outcome.is_empty():
+		_show_outcome()
+
+func _show_outcome() -> void:
+	state = State.RESOLVED
+	detector.reset_controls()
+	voice_frame = VoiceFrame.new()
+	status_title.text = App.texts.text("goal.event." + simulation.outcome + ".title")
+	status_hint.text = App.texts.text("goal.mechanics.resolvedHint")
 
 func _show_microphone_error(mic_status: String, code: String) -> void:
 	state = State.MIC_ERROR
