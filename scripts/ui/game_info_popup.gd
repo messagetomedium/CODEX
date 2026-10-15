@@ -21,7 +21,7 @@ func configure(content: Dictionary) -> void:
 	var result: bool = content.get("kind", "") in ["final", "intermediate"]
 	var title := UI.label(self, content.get("title", ""), Rect2(padding, unit.y * layout.titleY, size.x - padding * 2, unit.y * layout.titleHeight), 44 if result else 34)
 	if result:
-		App.animations.play(title, "final.headline")
+		App.animations.play(title, content.get("headlineProfile", "final.headline"))
 		var statistics := Control.new()
 		statistics.name = "Statistics"
 		statistics.position = Vector2(padding, unit.y * layout.statsY)
@@ -31,7 +31,7 @@ func configure(content: Dictionary) -> void:
 		var rows: Array = content.get("statistics", [])
 		for i in rows.size():
 			UI.label(statistics, rows[i], Rect2(0, unit.y * i * (layout.statHeight + layout.statGap), statistics.size.x, unit.y * layout.statHeight), 32)
-		App.animations.play(statistics, "final.stats")
+		App.animations.play(statistics, content.get("statsProfile", "final.stats"))
 	UI.label(self, content.get("description", ""), Rect2(padding, unit.y * layout.objectiveY, size.x - padding * 2, unit.y * layout.objectiveHeight), 28)
 	if not compact:
 		var instructions: Array = content.instructionItems
@@ -53,8 +53,11 @@ func configure(content: Dictionary) -> void:
 			item.add_child(icon)
 			UI.label(item, item_data.title, Rect2(0, unit.y * layout.itemTitleY, item_width, unit.y * layout.itemTitleHeight), 25)
 			UI.label(item, item_data.text, Rect2(0, unit.y * layout.itemTextY, item_width, unit.y * layout.itemTextHeight), 22)
-			App.animations.play(item, "intro.instructionItem", "enter", false, i)
-			App.animations.play(icon, "intro.visual.icon")
+			App.animations.play(item, content.get("instructionProfile", "intro.instructionItem"), "enter", false, i)
+			App.animations.play(icon, content.get("iconProfile", "intro.visual.icon"))
+	var extra: Control = content.get("extraContent")
+	if extra != null:
+		add_child(extra)
 	var actions: Array = content.get("actions", [])
 	var action_width: float = unit.x * layout.actionWidth
 	var gap: float = unit.x * layout.get("actionGapFraction", 0)
@@ -75,4 +78,4 @@ func configure(content: Dictionary) -> void:
 			button.pressed.connect(func(): action_requested.emit(action.id))
 		action_buttons.append(button)
 	if result:
-		App.animations.play(action_group, "final.actions")
+		App.animations.play(action_group, content.get("actionsProfile", "final.actions"))

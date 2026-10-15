@@ -397,6 +397,400 @@
           "opacity": 1
         }
       }
+    },
+    "stands.team_card_enter": {
+      "enter": {
+        "durationMs": 260,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 16
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 260,
+        "from_opacity": 0,
+        "to_opacity": 1,
+        "offset_y_px": 16,
+        "easing": "out_cubic"
+      }
+    },
+    "stands.team_card_hover": {
+      "enter": {
+        "durationMs": 160,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.0
+        },
+        "to": {
+          "scale": 1.035
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 160,
+        "scale_from": 1.0,
+        "scale_to": 1.035,
+        "easing": "out_quad"
+      },
+      "hover": {
+        "durationMs": 160,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.0
+        },
+        "to": {
+          "scale": 1.035
+        }
+      }
+    },
+    "stands.team_card_selected": {
+      "enter": {
+        "durationMs": 180,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.0
+        },
+        "to": {
+          "scale": 1.04
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 180,
+        "scale_from": 1.0,
+        "scale_to": 1.04,
+        "outline_pulse": 0.3,
+        "easing": "out_quad"
+      },
+      "hover": {
+        "durationMs": 180,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.0
+        },
+        "to": {
+          "scale": 1.04
+        }
+      }
+    },
+    "stands.intro_popup_enter": {
+      "enter": {
+        "durationMs": 320,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0,
+          "scale": 0.96
+        },
+        "to": {
+          "opacity": 1.0,
+          "scale": 1.0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 320,
+        "opacity_from": 0.0,
+        "opacity_to": 1.0,
+        "scale_from": 0.96,
+        "scale_to": 1.0,
+        "easing": "out_cubic"
+      },
+      "exit": {
+        "durationMs": 180,
+        "from": {
+          "opacity": 1
+        },
+        "to": {
+          "opacity": 0
+        }
+      }
+    },
+    "stands.intro_step_enter": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0,
+          "yPx": 12
+        },
+        "to": {
+          "opacity": 1.0,
+          "yPx": 0
+        },
+        "staggerMs": 100
+      },
+      "sourceSettings": {
+        "duration_ms": 220,
+        "stagger_ms": 100,
+        "opacity_from": 0.0,
+        "offset_y_px": 12,
+        "easing": "out_quad"
+      }
+    },
+    "stands.intro_step_icon_slot": {
+      "enter": {
+        "durationMs": 650,
+        "easing": "ease-out",
+        "from": {
+          "yPx": 4,
+          "scale": 0.98
+        },
+        "to": {
+          "yPx": 0,
+          "scale": 1
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 650,
+        "animation": "gentle_pulse",
+        "amplitude_px": 4,
+        "enabled": true
+      }
+    },
+    "stands.turn_banner_swap": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0,
+          "scale": 0.93
+        },
+        "to": {
+          "opacity": 1.0,
+          "scale": 1.0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 220,
+        "opacity_from": 0.0,
+        "scale_from": 0.93,
+        "scale_to": 1.0,
+        "easing": "out_back"
+      }
+    },
+    "stands.opponent_stand_pulse": {
+      "enter": {
+        "durationMs": 650,
+        "easing": "ease-out",
+        "from": {},
+        "to": {}
+      },
+      "sourceSettings": {
+        "duration_ms": 650,
+        "min_brightness": 0.72,
+        "max_brightness": 1.0,
+        "motion_amplitude_px": 3.0,
+        "enabled": true
+      },
+      "pulse": {
+        "duration_ms": 650,
+        "min_brightness": 0.72,
+        "max_brightness": 1.0,
+        "motion_amplitude_px": 3.0,
+        "enabled": true
+      }
+    },
+    "stands.player_stand_pulse": {
+      "enter": {
+        "durationMs": 550,
+        "easing": "ease-out",
+        "from": {},
+        "to": {}
+      },
+      "sourceSettings": {
+        "duration_ms": 550,
+        "min_brightness": 0.72,
+        "max_brightness": 1.0,
+        "motion_amplitude_px": 4.0,
+        "enabled": true
+      },
+      "pulse": {
+        "duration_ms": 550,
+        "min_brightness": 0.72,
+        "max_brightness": 1.0,
+        "motion_amplitude_px": 4.0,
+        "enabled": true
+      }
+    },
+    "stands.inactive_stand_dim": {
+      "enter": {
+        "durationMs": 180,
+        "easing": "ease-out",
+        "from": {},
+        "to": {}
+      },
+      "sourceSettings": {
+        "duration_ms": 180,
+        "target_opacity": 0.62,
+        "easing": "out_quad"
+      }
+    },
+    "stands.chant_caption_enter": {
+      "enter": {
+        "durationMs": 170,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0,
+          "yPx": 10
+        },
+        "to": {
+          "opacity": 1.0,
+          "yPx": 0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 170,
+        "opacity_from": 0.0,
+        "offset_y_px": 10,
+        "easing": "out_quad"
+      }
+    },
+    "stands.voice_meter_response": {
+      "enter": {
+        "durationMs": 90,
+        "easing": "ease-out",
+        "from": {},
+        "to": {}
+      },
+      "sourceSettings": {
+        "duration_ms": 90,
+        "easing": "linear"
+      },
+      "follow": {
+        "smoothingMs": 90
+      }
+    },
+    "stands.peak_flash": {
+      "enter": {
+        "durationMs": 120,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.1
+        },
+        "to": {
+          "scale": 1.0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 120,
+        "scale_from": 1.1,
+        "scale_to": 1.0,
+        "easing": "out_quad"
+      }
+    },
+    "stands.tug_marker_follow": {
+      "enter": {
+        "durationMs": 120,
+        "easing": "ease-out",
+        "from": {},
+        "to": {}
+      },
+      "sourceSettings": {
+        "duration_ms": 120,
+        "easing": "out_cubic",
+        "clamp_to_score": true
+      },
+      "follow": {
+        "smoothingMs": 120
+      }
+    },
+    "stands.turn_countdown_tick": {
+      "enter": {
+        "durationMs": 100,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.06
+        },
+        "to": {
+          "scale": 1.0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 100,
+        "scale_from": 1.06,
+        "scale_to": 1.0,
+        "easing": "out_quad"
+      }
+    },
+    "stands.final_popup_enter": {
+      "enter": {
+        "durationMs": 340,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0,
+          "scale": 0.95
+        },
+        "to": {
+          "opacity": 1.0,
+          "scale": 1.0
+        }
+      },
+      "sourceSettings": {
+        "duration_ms": 340,
+        "opacity_from": 0.0,
+        "scale_from": 0.95,
+        "scale_to": 1.0,
+        "easing": "out_cubic"
+      }
+    },
+    "stands.final_headline_enter": {
+      "enter": {
+        "durationMs": 290,
+        "easing": "ease-out",
+        "from": {
+          "yPx": 18
+        },
+        "to": {
+          "yPx": 0
+        },
+        "delayMs": 80
+      },
+      "sourceSettings": {
+        "duration_ms": 290,
+        "delay_ms": 80,
+        "offset_y_px": 18,
+        "easing": "out_back"
+      }
+    },
+    "stands.final_score_enter": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0
+        },
+        "to": {
+          "opacity": 1.0
+        },
+        "delayMs": 160
+      },
+      "sourceSettings": {
+        "duration_ms": 220,
+        "delay_ms": 160,
+        "opacity_from": 0.0,
+        "easing": "out_quad"
+      }
+    },
+    "stands.final_buttons_enter": {
+      "enter": {
+        "durationMs": 190,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.0
+        },
+        "to": {
+          "opacity": 1.0
+        },
+        "delayMs": 230
+      },
+      "sourceSettings": {
+        "duration_ms": 190,
+        "delay_ms": 230,
+        "opacity_from": 0.0,
+        "easing": "out_quad"
+      }
     }
   }
 }

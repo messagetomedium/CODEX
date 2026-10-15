@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "selection": "one_of_four",
+  "opponent_selection": "random_other_team",
+  "player_side": "left",
+  "opponent_side": "right",
+  "debug_seed_supported": true,
+  "teams": [
+    {
+      "id": "sokoly_1960",
+      "era": "1960-е",
+      "primary_color": "#C64343",
+      "text_color": "#F5E8D9",
+      "secondary_color": "#A02E30",
+      "name_key": "stands.teams.sokoly_1960.name",
+      "description_key": "stands.teams.sokoly_1960.description",
+      "crest_placeholder_id": "sokoly_1960_crest"
+    },
+    {
+      "id": "volna_1980",
+      "era": "1980-е",
+      "primary_color": "#2966AB",
+      "text_color": "#E9F1FF",
+      "secondary_color": "#1B417E",
+      "name_key": "stands.teams.volna_1980.name",
+      "description_key": "stands.teams.volna_1980.description",
+      "crest_placeholder_id": "volna_1980_crest"
+    },
+    {
+      "id": "impuls_2000",
+      "era": "2000-е",
+      "primary_color": "#D09C32",
+      "text_color": "#FFF3CF",
+      "secondary_color": "#9B6B15",
+      "name_key": "stands.teams.impuls_2000.name",
+      "description_key": "stands.teams.impuls_2000.description",
+      "crest_placeholder_id": "impuls_2000_crest"
+    },
+    {
+      "id": "ritm_2020",
+      "era": "2020-е",
+      "primary_color": "#188F82",
+      "text_color": "#E3F9F4",
+      "secondary_color": "#0B685E",
+      "name_key": "stands.teams.ritm_2020.name",
+      "description_key": "stands.teams.ritm_2020.description",
+      "crest_placeholder_id": "ritm_2020_crest"
+    }
+  ]
+}

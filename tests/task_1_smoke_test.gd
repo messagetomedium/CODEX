@@ -32,9 +32,9 @@ func _run() -> void:
 	check(menu.name == "MainMenu", "Menu loaded")
 	check(menu.cards.size() == 3, "Exactly three cards")
 	for i in 3:
-		check(menu.cards[i].disabled == (i != 0), "Only first card is enabled")
+		check(menu.cards[i].disabled == (i == 2), "Goal and Stands enabled; Commentator remains disabled")
 		check(menu.cards[i].focus_mode == Control.FOCUS_NONE, "Mouse-only card selection")
-		check(menu.cards[i].pressed.get_connections().size() == (1 if i == 0 else 0), "Disabled cards have no navigation handler")
+		check(menu.cards[i].pressed.get_connections().size() == (1 if i < 2 else 0), "Disabled cards have no navigation handler")
 	check(app.reset_button.get_parent().layer == 100, "Reset sits above all level overlays")
 	check(app.reset_button.text == app.texts.text("common.reset"), "Reset uses catalog")
 	menu.cards[0].pressed.emit()

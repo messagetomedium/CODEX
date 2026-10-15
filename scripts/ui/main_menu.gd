@@ -40,7 +40,7 @@ func _ready() -> void:
 		if button.disabled:
 			UI.label(button, App.texts.text("menu.disabledLabel"), Rect2(inset, App.design_size.y * layout.badgeY, button.size.x - inset * 2, 32), 20)
 		else:
-			button.pressed.connect(App.open_goal)
+			button.pressed.connect(App.open_stands if card_data.id == "stands" else App.open_goal)
 			button.mouse_entered.connect(func(): App.animations.play(button, "menu.card.enabled", "hover"))
 			button.mouse_exited.connect(func(): App.animations.play(button, "menu.card.enabled", "hover", true))
 		App.animations.play(button, "menu.card.disabled" if button.disabled else "menu.card.enabled")

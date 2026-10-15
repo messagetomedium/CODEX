@@ -40,6 +40,17 @@ func _draw() -> void:
 			Shapes.ball(self, Vector2(w * 0.65, h * 0.48), h * 0.22)
 			for i in 3:
 				draw_line(Vector2(w * (0.2 + i * 0.07), h * (0.3 + i * 0.13)), Vector2(w * 0.42, h * (0.3 + i * 0.13)), ink, 3, true)
+		"turn_wait":
+			for side in [-1, 1]:
+				draw_circle(Vector2(w * (0.5 + side * 0.13), h * 0.35), h * 0.16, ink)
+				draw_rect(Rect2(w * (0.5 + side * 0.13) - h * 0.16, h * 0.54, h * 0.32, h * 0.4), Color("#bc5a48") if side < 0 else Color("#2966ab"))
+		"voice_burst":
+			for i in 5:
+				var height := h * (0.3 + (2 - absi(i - 2)) * 0.25)
+				draw_rect(Rect2(w * (0.32 + i * 0.075), (h - height) / 2, w * 0.04, height), ink)
+		"tug_marker":
+			draw_line(Vector2(w * 0.2, h * 0.6), Vector2(w * 0.8, h * 0.6), ink, 7, true)
+			draw_colored_polygon(PackedVector2Array([Vector2(w * 0.4, h * 0.12), Vector2(w * 0.35, h * 0.45), Vector2(w * 0.45, h * 0.45)]), Color("#bc5a48"))
 		"voice-kick":
 			draw_arc(Vector2(w * 0.5, h * 0.85), h * 0.65, PI * 1.1, PI * 1.9, 24, ink, 3, true)
 			Shapes.ball(self, Vector2(w * 0.76, h * 0.65), h * 0.17)

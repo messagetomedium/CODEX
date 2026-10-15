@@ -28,12 +28,33 @@ anim=load('ui_animations.json')
 layout=load('ui_layout.json')
 game=load('gameplay.json')
 assets=load('asset_manifest.json')
+stands=load('stands_gameplay.json')
+teams=load('stands_teams.json')
+load('stands_assets.json')
+load('stands_layout.json')
+if len(teams['teams']) != 4 or len({t['id'] for t in teams['teams']}) != 4:
+    errors.append('Stands requires four distinct fictional teams')
+levels=stands['levels']
+if any(not levels[f'level_{i}']['enabled'] or levels[f'level_{i}']['duration_seconds'] != 60 for i in range(1,4)):
+    errors.append('All three Stands levels must be enabled and last sixty seconds')
+if [levels[f'level_{i}']['target_peaks'] for i in range(1,4)] != [3,4,5]:
+    errors.append('Stands peak targets must increase from three to five')
+if levels['level_1']['turn_mode'] != 'fixed' or levels['level_1']['turn_seconds'] != 5 or stands['timing']['turn_count'] != 12:
+    errors.append('Stands level one requires twelve fixed five-second turns')
+if any(levels[f'level_{i}']['turn_mode'] != 'random' or levels[f'level_{i}']['turn_seconds_min'] != 3 or levels[f'level_{i}']['turn_seconds_max'] != 6 for i in [2,3]):
+    errors.append('Higher Stands levels require three-to-six-second turns')
+if not sum([stands['score']['loudness_weight'],stands['score']['distinct_peak_weight']]) == 1:
+    errors.append('Stands score weights must sum to one')
+if not (levels['level_1']['opponent_loss_per_full_turn'] < levels['level_2']['opponent_loss_per_full_turn'] < levels['level_3']['opponent_loss_per_full_turn']):
+    errors.append('Stands opponent must become stronger each level')
+if not (R/stands['audio']['path'].removeprefix('res://')).is_file() or stands['timing']['speaker_fade_ms'] > 120:
+    errors.append('Stands needs its original local crowd WAV and a short audio transition')
 
 cards=ui['menu']['cards']
 if [x['id'] for x in cards]!=['goal','stands','commentator']:
     errors.append('Menu must list goal, stands, commentator in that order')
-if [x['enabled'] for x in cards]!=[True,False,False]:
-    errors.append('Only Goal card enabled in menu')
+if [x['enabled'] for x in cards]!=[True,True,False]:
+    errors.append('Goal and Stands must be enabled; Commentator stays disabled')
 if 'title' in ui['menu']:errors.append('Do not add a global menu title')
 if len(ui['goal']['intro']['instructions'])!=3:errors.append('Intro must have 3 infographic items')
 for item in ui['goal']['intro']['instructions']:
@@ -84,7 +105,7 @@ for profile in required_profiles:
     if profile not in anim['profiles']:errors.append(f'Missing animation profile: {profile}')
 if len(layout['eventPlacement']['fail']['candidates']) < 3:errors.append('Not enough safe notification anchors')
 if not assets['reference']['goalScene'] == 'references/goal_scene_original.png':errors.append('Wrong visual reference')
-allowed_vars={'goals','goalTarget','attemptsUsed','maxAttempts','round'}
+allowed_vars={'goals','goalTarget','attemptsUsed','maxAttempts','round','seconds','peaks','targetPeaks','score','playerTeam','opponentTeam','turn','turnCount','levelCount'}
 # Validate all text templates, avoid assuming keys with placeholders are renamable.
 def walk(x, path='ui'):
     if isinstance(x,dict):
@@ -114,4 +135,4 @@ if 'barichello/godot-ci:4.5.2' not in workflow or 'actions/deploy-pages@v4' not 
 if errors:
     print('FAIL:\n'+'\n'.join(' - '+x for x in errors),file=sys.stderr)
     sys.exit(1)
-print(f'OK: Godot handoff, 5 JSON configs, 3 cards, 3 infographic slots, 4 result tiers, tips, {len(anim["profiles"])} animation profiles, Godot Web preset + Pages workflow')
+print(f'OK: Godot handoff, 9 JSON configs, Goal + Stands enabled, 3 Stands levels / 4 teams, {len(anim["profiles"])} animation profiles, Godot Web preset + Pages workflow')

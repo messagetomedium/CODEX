@@ -40,6 +40,16 @@ for tier,d in g['results']['tiers'].items():
     for i,phrase in enumerate(d['phrases'],1):row(f'goal.results.tiers.{tier}.{i:02d}',phrase,f'Финал: {tier} гол(а/ов), {d["state"]}')
 for k,v in g['intermediateResult'].items():row(f'goal.intermediateResult.{k}',v,'Зарезервировано на будущие раунды')
 
+def stands_rows(value, path='stands'):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key not in ('visual','id'): stands_rows(child, path+'.'+key)
+    elif isinstance(value, list):
+        for index, child in enumerate(value): stands_rows(child, path+'.'+str(index))
+    elif isinstance(value, str):
+        row(path,value,'Трибуны: инструкция / команды / HUD / результаты')
+if 'stands' in js: stands_rows(js['stands'])
+
 catalog = '\n'.join([
     '> **Важно:** этот каталог создан из `data/config/ui.ru.json`. Для редактирования реплик изменяйте JSON, затем запускайте `python tools/sync_ui_docs.py`.',
     '',

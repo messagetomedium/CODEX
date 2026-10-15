@@ -8,6 +8,10 @@ func _init() -> void:
 		"res://data/config/ui_layout.json",
 		"res://data/config/gameplay.json",
 		"res://data/config/asset_manifest.json",
+		"res://data/config/stands_gameplay.json",
+		"res://data/config/stands_teams.json",
+		"res://data/config/stands_assets.json",
+		"res://data/config/stands_layout.json",
 	]
 	var loaded: Dictionary = {}
 	for file_path in files:

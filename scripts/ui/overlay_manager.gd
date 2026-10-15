@@ -16,7 +16,7 @@ func show_info(content: Dictionary, placement_id: String = "intro") -> void:
 	closing = false
 	var placement: Dictionary = App.config.data.ui_layout.positions[placement_id]
 	popup = PopupScene.instantiate()
-	popup.size = App.design_size * Vector2(placement.maxWidthFraction, minf(placement.maxHeightFraction, App.config.data.ui_layout.components.popup.heightFraction))
+	popup.size = App.design_size * Vector2(placement.maxWidthFraction, minf(placement.maxHeightFraction, content.get("heightFraction", App.config.data.ui_layout.components.popup.heightFraction)))
 	popup.position = App.design_size * Vector2(placement.centerX, placement.centerY) - popup.size / 2
 	add_child(popup)
 	popup.configure(content)

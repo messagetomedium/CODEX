@@ -131,7 +131,10 @@ with sync_playwright() as p:
     load()
     menu = page.screenshot(path=str(out / 'menu.png'))
     click(640, 360)
-    assert page.screenshot() == menu, 'Disabled stands card navigated'
+    assert page.screenshot() != menu, 'Enabled Stands card did not open'
+    assert page.evaluate('window.__micRequests') == 0, 'Stands intro requested microphone without Start'
+    click(1190, 49, 650)
+    assert page.screenshot() == menu, 'Reset from Stands did not restore menu'
     click(1005, 360)
     assert page.screenshot() == menu, 'Disabled commentator card navigated'
     open_level()
@@ -197,15 +200,28 @@ with sync_playwright() as p:
     reset()
     open_level(); click(640, 495, 350)
     page.keyboard.press('1', delay=80)
-    page.keyboard.down('Space'); page.wait_for_timeout(180)
-    flight_png = page.screenshot(path=str(out / 'weak-kick-flight.png'))
+    page.keyboard.down('Space')
+    layout = json.loads((Path(__file__).resolve().parents[1] / 'data/config/ui_layout.json').read_text())
+    gameplay = json.loads((Path(__file__).resolve().parents[1] / 'data/config/gameplay.json').read_text())
+    composition = layout['refComposition']
+    start_y = composition['ballAtStart']['y'] * 720
+    radius_at_goal = 1280 * composition['ballAtStart']['diameterFractionOfWidth'] / 2 * gameplay['ball']['scaleAtGoalLine']
+    end_y = composition['goal']['y'] * 720 - radius_at_goal * gameplay['ball']['shadowContactRadiusFraction']
+    highest_arc = 0
+    for _ in range(7):
+        page.wait_for_timeout(50)
+        flight_png = page.screenshot()
+        flight_box = ball_box(flight_png)
+        scale = (flight_box[2] - flight_box[0]) / (ready_box[2] - ready_box[0])
+        progress = (1 - scale) / (1 - gameplay['ball']['scaleAtGoalLine'])
+        ground_center_y = start_y + (end_y - start_y) * progress
+        visible_center_y = (flight_box[1] + flight_box[3]) / 2
+        highest_arc = max(highest_arc, ground_center_y - visible_center_y)
+        if highest_arc > 30:
+            break
+    (out / 'weak-kick-flight.png').write_bytes(flight_png)
     page.keyboard.up('Space')
-    flight_box = ball_box(flight_png)
-    scale = (flight_box[2] - flight_box[0]) / (ready_box[2] - ready_box[0])
-    progress = (1 - scale) / 0.84
-    ground_center_y = 604.8 + (341.55 - 604.8) * progress
-    visible_center_y = (flight_box[1] + flight_box[3]) / 2
-    assert ground_center_y - visible_center_y > 30, 'Kick had no visible arc above its ground projection'
+    assert highest_arc > 30, 'Kick had no visible arc above its ground projection'
     page.wait_for_timeout(850)
     page.screenshot(path=str(out / 'weak-kick-landed.png'))
     reset()

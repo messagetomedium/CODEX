@@ -1,5 +1,5 @@
 extends Node
-## Only two full-screen destinations. No microphone or gameplay in Task 1.
+## Shared menu/level navigation; microphone ownership stays inside the active level.
 
 const ConfigService = preload("res://scripts/app/config_service.gd")
 const TextCatalog = preload("res://scripts/app/text_catalog.gd")
@@ -42,6 +42,9 @@ func _ready() -> void:
 
 func open_goal() -> void:
 	_navigate("res://scenes/GoalLevel.tscn")
+
+func open_stands() -> void:
+	_navigate("res://scenes/StandsLevel.tscn")
 
 func reset() -> void:
 	_navigate("res://scenes/MainMenu.tscn")

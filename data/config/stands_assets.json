@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reference_image": "User-supplied composition reference in conversation; never used as a game backdrop.",
+  "reference_only": true,
+  "slots": [
+    {
+      "id": "stadium_backdrop",
+      "placeholder": "procedural_polygons",
+      "future": "res://assets/stands/stadium.webp"
+    },
+    {
+      "id": "crowd_left",
+      "placeholder": "procedural_crowd_group",
+      "future": "res://assets/stands/crowd_left_spriteframes.tres",
+      "states": [
+        "idle",
+        "cheer",
+        "win"
+      ]
+    },
+    {
+      "id": "crowd_right",
+      "placeholder": "procedural_crowd_group",
+      "future": "res://assets/stands/crowd_right_spriteframes.tres",
+      "states": [
+        "idle",
+        "cheer",
+        "win"
+      ]
+    },
+    {
+      "id": "team_crests",
+      "placeholder": "colored_geometric_badges",
+      "future": "res://assets/stands/crests/{team_id}.png"
+    },
+    {
+      "id": "turn_icons",
+      "placeholder": "procedural_icons",
+      "future": "res://assets/stands/ui/{icon_id}.png"
+    },
+    {
+      "id": "intro_icons",
+      "placeholder": "simple_code_draw",
+      "future": "res://assets/stands/intro/{slot_id}.png"
+    },
+    {
+      "id": "opponent_cheer_audio",
+      "placeholder": "self_generated_loop",
+      "future": "res://assets/stands/audio/opponent_cheer_loop.ogg",
+      "production_audio": "future_licensed_archive"
+    }
+  ]
+}
