@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "engine": "Godot Tween on Control/CanvasItem (programmatic only); shared UIAnimationController maps JSON easing and transforms; no GIF or video for UI",
+  "_editingNote": "Каждый UI элемент имеет независимый профиль. durationMs/delayMs, opacity/scale/yPx остаются данными, которые Godot UIAnimationController переводит в Tween. Без вшитых длительностей.",
+  "profiles": {
+    "menu.card.enabled": {
+      "enter": {
+        "durationMs": 200,
+        "delayMs": 0,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 18,
+          "scale": 0.98
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0,
+          "scale": 1
+        }
+      },
+      "hover": {
+        "durationMs": 140,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1
+        },
+        "to": {
+          "scale": 1.025
+        }
+      }
+    },
+    "menu.card.disabled": {
+      "enter": {
+        "durationMs": 200,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 18
+        },
+        "to": {
+          "opacity": 0.48,
+          "yPx": 0
+        }
+      }
+    },
+    "intro.panel": {
+      "enter": {
+        "durationMs": 240,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 16,
+          "scale": 0.985
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 180,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1,
+          "yPx": 0
+        },
+        "to": {
+          "opacity": 0,
+          "yPx": -10
+        }
+      }
+    },
+    "intro.instructionItem": {
+      "enter": {
+        "durationMs": 180,
+        "staggerMs": 55,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 12
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0
+        }
+      }
+    },
+    "intro.visual.icon": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "scale": 0.9,
+          "opacity": 0
+        },
+        "to": {
+          "scale": 1,
+          "opacity": 1
+        }
+      }
+    },
+    "intro.visual.codeAnimation": {
+      "loopMs": 1900,
+      "demoMotionPx": 18,
+      "easing": "ease-in-out",
+      "note": "Only programmatically animated miniature object/ball: code, not animated asset"
+    },
+    "goalEvent.panel": {
+      "enter": {
+        "durationMs": 180,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": -12,
+          "scale": 0.97
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 220,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1
+        },
+        "to": {
+          "opacity": 0
+        }
+      }
+    },
+    "goalEvent.title": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "scale": 0.8
+        },
+        "to": {
+          "opacity": 1,
+          "scale": 1
+        }
+      }
+    },
+    "goalEvent.tip": {
+      "enter": {
+        "durationMs": 240,
+        "delayMs": 180,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 8
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0
+        }
+      }
+    },
+    "failEvent.callout": {
+      "enter": {
+        "durationMs": 240,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 16,
+          "scale": 0.97
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 200,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1,
+          "yPx": 0
+        },
+        "to": {
+          "opacity": 0,
+          "yPx": -8
+        }
+      }
+    },
+    "final.panel": {
+      "enter": {
+        "durationMs": 280,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "scale": 0.96
+        },
+        "to": {
+          "opacity": 1,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 180,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1
+        },
+        "to": {
+          "opacity": 0
+        }
+      }
+    },
+    "final.headline": {
+      "enter": {
+        "durationMs": 240,
+        "delayMs": 110,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 10
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0
+        }
+      }
+    },
+    "final.stats": {
+      "enter": {
+        "durationMs": 200,
+        "delayMs": 180,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0
+        },
+        "to": {
+          "opacity": 1
+        }
+      }
+    },
+    "final.actions": {
+      "enter": {
+        "durationMs": 200,
+        "delayMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 8
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0
+        }
+      }
+    },
+    "microphoneError.panel": {
+      "enter": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 12
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0
+        }
+      }
+    },
+    "hud.goals": {
+      "changed": {
+        "durationMs": 260,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.13
+        },
+        "to": {
+          "scale": 1
+        }
+      }
+    },
+    "hud.attempts": {
+      "changed": {
+        "durationMs": 220,
+        "easing": "ease-out",
+        "from": {
+          "scale": 1.1
+        },
+        "to": {
+          "scale": 1
+        }
+      }
+    },
+    "hud.voiceMeter": {
+      "follow": {
+        "smoothingMs": 75,
+        "method": "coded-smoothing"
+      }
+    },
+    "global.reset": {
+      "hover": {
+        "durationMs": 100,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0.85
+        },
+        "to": {
+          "opacity": 1
+        }
+      }
+    },
+    "world.goalNet": {
+      "impact": {
+        "durationMs": 350,
+        "easing": "ease-out",
+        "from": {
+          "scaleX": 1.06,
+          "scaleY": 0.94
+        },
+        "to": {
+          "scaleX": 1,
+          "scaleY": 1
+        }
+      }
+    },
+    "world.goalCelebrationUI": {
+      "enter": {
+        "durationMs": 260,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "scale": 0.9
+        },
+        "to": {
+          "opacity": 1,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 450,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1
+        },
+        "to": {
+          "opacity": 0
+        }
+      }
+    }
+  }
+}

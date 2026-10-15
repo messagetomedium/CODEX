@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "status": "ALL numerical values below except goalTarget/maxAttempts/round are provisional prototype tuning parameters, NOT approved final gameplay balance.",
+  "round": {
+    "number": 1,
+    "goalTarget": 3,
+    "maxAttempts": 6,
+    "noMatchTimer": true,
+    "autoIdleReset": false
+  },
+  "ball": {
+    "xNormalized": 0.5,
+    "progressAtStart": 0,
+    "progressAtGoalLine": 1.0,
+    "rollingTargetTravelSecondsAtFastQuietVoice": 4.0,
+    "rollingMinProgressPerSecond": 0.07,
+    "rollingMaxProgressPerSecond": 0.25,
+    "stopInertiaMs": 100
+  },
+  "kick": {
+    "cooldownMs": 450,
+    "minTravelProgress": 0.18,
+    "maxTravelProgress": 1.2,
+    "minFlightMs": 570,
+    "maxFlightMs": 1350,
+    "arcVisualPixelsMin": 80,
+    "arcVisualPixelsMax": 350,
+    "requireVolumeAttack": true
+  },
+  "goalkeeper": {
+    "patrolLeftX": 0.37,
+    "patrolRightX": 0.63,
+    "crossScreenSeconds": 2.9,
+    "hitboxWidthFractionOfCanvas": 0.055,
+    "noJump": true
+  },
+  "defender": {
+    "maxSimultaneous": 1,
+    "crossScreenSeconds": 2.6,
+    "respawnGapMsMin": 650,
+    "respawnGapMsMax": 1300,
+    "laneYNormalizedMin": 0.42,
+    "laneYNormalizedMax": 0.72,
+    "hitboxInsetFraction": 0.12,
+    "allowEitherDirection": true
+  },
+  "microphone": {
+    "rmsWindowMs": 35,
+    "calibrationBackgroundMs": 500,
+    "backgroundTracking": true,
+    "quietVoiceMinNormalized": 0.14,
+    "quietVoiceMaxNormalized": 0.52,
+    "kickAttackDeltaNormalized": 0.23,
+    "kickLevelMinNormalized": 0.56,
+    "impulseReleaseThresholdNormalized": 0.32,
+    "smoothingMs": 75
+  },
+  "eventFeedback": {
+    "durationMs": 2500,
+    "pauseSimulation": true
+  },
+  "options": {
+    "soundsEnabled": false,
+    "micPlaybackEnabled": false,
+    "keyboardDebugModeAllowed": true,
+    "introBeforeEveryRound": false,
+    "resetConfirmation": false
+  },
+  "devTesting": {
+    "keyboardRollKey": "W",
+    "keyboardKickKey": "Space",
+    "enableOnlyWithQueryParam": "debug=1",
+    "keyboardStrengthKeys": [
+      "1",
+      "2",
+      "3"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "note": "Godot 4: reusable art paths are res://assets/... . Blockout draws primitives with Godot; missing final art must not block build. The original image is composition-only and excluded from the Web export.",
+  "reference": {
+    "goalScene": "references/goal_scene_original.png"
+  },
+  "sprites": {
+    "goal.background": "res://assets/backgrounds/goal_field.webp",
+    "goal.goalpost": "res://assets/sprites/goal_post.png",
+    "goal.net": "res://assets/sprites/goal_net.png",
+    "goal.ball": "res://assets/sprites/ball.png",
+    "goal.goalkeeper": "res://assets/sprites/goalkeeper.png",
+    "goal.defender": "res://assets/sprites/defender.png"
+  },
+  "menuImages": {
+    "menu.goal": "res://assets/ui/menu_goal.webp",
+    "menu.stands": "res://assets/ui/menu_stands.webp",
+    "menu.commentator": "res://assets/ui/menu_commentator.webp"
+  },
+  "icons": {
+    "voice-roll": {
+      "render": "code-drawn-in-blockout",
+      "laterPath": "res://assets/ui/icon_roll.svg"
+    },
+    "voice-kick": {
+      "render": "code-drawn-in-blockout",
+      "laterPath": "res://assets/ui/icon_kick.svg"
+    },
+    "timing": {
+      "render": "code-drawn-in-blockout",
+      "laterPath": "res://assets/ui/icon_timing.svg"
+    }
+  },
+  "audio": {
+    "enabled": false,
+    "files": []
+  }
+}

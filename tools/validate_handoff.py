@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Checks the MVP handoff package is internally consistent before Codex opens it."""
+from pathlib import Path
+import json, re, sys
+
+R = Path(__file__).resolve().parents[1]
+errors=[]
+required=[
+    'AGENTS.md','CODEX_FIRST_PROMPT.txt','CODEX_TASKS_v1.0.md','GDD_Matryoshka_v1.0.md',
+    'README_START_HERE.md','SCREEN_SCRIPT_UI_v1.0.md','TECH_ARCHITECTURE_v1.0.md',
+    'references/goal_scene_original.png','tools/sync_ui_docs.py',
+    'data/config/ui.ru.json','data/config/gameplay.json',
+    'data/config/ui_layout.json','data/config/ui_animations.json',
+    'data/config/asset_manifest.json',
+    'project.godot','export_presets.cfg','GITHUB_SETUP.md',
+    '.github/workflows/web-pages.yml','scenes/Bootstrap.tscn',
+    'scripts/bootstrap.gd','tests/config_smoke_test.gd',
+    'tools/setup_codex_env.sh'
+]
+for name in required:
+    if not (R/name).is_file():errors.append(f'Missing {name}')
+if errors:
+    print('\n'.join(errors),file=sys.stderr);sys.exit(1)
+
+def load(name):return json.loads((R/'data/config'/name).read_text(encoding='utf8'))
+ui=load('ui.ru.json')
+anim=load('ui_animations.json')
+layout=load('ui_layout.json')
+game=load('gameplay.json')
+assets=load('asset_manifest.json')
+
+cards=ui['menu']['cards']
+if [x['id'] for x in cards]!=['goal','stands','commentator']:
+    errors.append('Menu must list goal, stands, commentator in that order')
+if [x['enabled'] for x in cards]!=[True,False,False]:
+    errors.append('Only Goal card enabled in menu')
+if 'title' in ui['menu']:errors.append('Do not add a global menu title')
+if len(ui['goal']['intro']['instructions'])!=3:errors.append('Intro must have 3 infographic items')
+for item in ui['goal']['intro']['instructions']:
+    if item['visual']['mode'] not in ['icon','codeAnimation']:errors.append(f'Invalid visual mode: {item["id"]}')
+if game['round']['goalTarget']!=3 or game['round']['maxAttempts']!=6 or game['round']['number']!=1:
+    errors.append('Expected 3 goals / 6 attempts / round 1')
+if game['defender']['maxSimultaneous']!=1:errors.append('At most one defender')
+if not (game['round']['autoIdleReset']==False and game['options']['soundsEnabled']==False and game['options']['micPlaybackEnabled']==False):
+    errors.append('No auto idle reset and no audio playback')
+if game['options']['introBeforeEveryRound'] != False:errors.append('Instructions only before minigame')
+if set(ui['goal']['results']['tiers']) != set('0123'):errors.append('Results tiers must be 0,1,2,3')
+for k,v in ui['goal']['results']['tiers'].items():
+    if len(v.get('phrases',[]))!=3:errors.append(f'Need 3 result phrases for tier {k}')
+    if v['state']!= ('win' if k=='3' else 'loss'):errors.append(f'Wrong outcome tier {k}')
+tips=ui['goal']['tips']
+if len(tips)<8 or len(set(t['id'] for t in tips)) != len(tips):errors.append('Tips missing or IDs duplicated')
+required_profiles=[
+'menu.card.enabled','menu.card.disabled','intro.panel','intro.instructionItem',
+'intro.visual.icon','intro.visual.codeAnimation','goalEvent.panel','goalEvent.title',
+'goalEvent.tip','failEvent.callout','final.panel','final.headline','final.stats',
+'final.actions','microphoneError.panel','hud.goals','hud.attempts','hud.voiceMeter',
+'global.reset','world.goalNet','world.goalCelebrationUI'
+]
+for profile in required_profiles:
+    if profile not in anim['profiles']:errors.append(f'Missing animation profile: {profile}')
+if len(layout['eventPlacement']['fail']['candidates']) < 3:errors.append('Not enough safe notification anchors')
+if not assets['reference']['goalScene'] == 'references/goal_scene_original.png':errors.append('Wrong visual reference')
+allowed_vars={'goals','goalTarget','attemptsUsed','maxAttempts','round'}
+# Validate all text templates, avoid assuming keys with placeholders are renamable.
+def walk(x, path='ui'):
+    if isinstance(x,dict):
+        for key,val in x.items():walk(val,path+'.'+str(key))
+    elif isinstance(x,list):
+        for i,val in enumerate(x):walk(val,path+'.'+str(i))
+    elif isinstance(x,str) and not path.endswith('._editingNote'):
+        for v in re.findall(r'\{([^{}]*)\}',x):
+            if v not in allowed_vars:errors.append(f'Unknown template variable {{{v}}} at {path}')
+walk(ui)
+
+script=(R/'SCREEN_SCRIPT_UI_v1.0.md').read_text(encoding='utf8')
+if script.count('<!-- UI_CATALOG_BEGIN -->')!=1 or script.count('<!-- UI_CATALOG_END -->')!=1:
+    errors.append('UI script catalog markers invalid')
+if len(re.findall(r'^\| `',script,flags=re.M)) < 65:
+    errors.append('UI script catalog is incomplete; run sync_ui_docs.py')
+
+# Check the Godot/Web handoff rather than the old Phaser/Vite runtime.
+preset=(R/'export_presets.cfg').read_text(encoding='utf8')
+if 'name="Web"' not in preset or 'variant/thread_support=false' not in preset:
+    errors.append('Godot Web must be a non-threaded Web preset')
+if 'data/config/*.json' not in preset or 'web/*.js' not in preset:
+    errors.append('Web export must include non-resource JSON and microphone JS files')
+workflow=(R/'.github/workflows/web-pages.yml').read_text(encoding='utf8')
+if 'barichello/godot-ci:4.5.2' not in workflow or 'actions/deploy-pages@v4' not in workflow:
+    errors.append('Missing pinned Godot CI + GitHub Pages actions')
+if errors:
+    print('FAIL:\n'+'\n'.join(' - '+x for x in errors),file=sys.stderr)
+    sys.exit(1)
+print('OK: Godot handoff, 5 JSON configs, 3 cards, 3 infographic slots, 4 result tiers, tips, 21 animation profiles, Godot Web preset + Pages workflow')

@@ -1,0 +1,181 @@
+# «Матрёшка» — техническая архитектура Godot + облачный Codex, v1.0
+
+**Назначение:** реализация игрового дизайна из `GDD_Matryoshka_v1.0.md` без добавления новых механик. **Целевая платформа:** десктопный браузер через Godot Web export; публикация на GitHub Pages. **Движок:** Godot 4.5.2 standard (без .NET), язык GDScript. **Рендерер:** Compatibility (WebGL 2.0). **Web export:** без потоков (`variant/thread_support=false`). **Разрешение композиции:** 1920×1080 (16:9), aspect keep.
+
+Это техническая редакция исходной спецификации на Phaser; GDD, порядок экранов, параметры баланса, все UI-тексты, скрипт попапов и референс композиции сохраняются.
+
+## 1. Иерархия сцен и файлов
+
+В игровом приложении **всего два типа полноэкранных экранов**:
+- `MAIN_MENU`: главная игровая сцена `scenes/MainMenu.tscn`;
+- `GAME_LEVEL`: сцена мини-игры, в v1.0 `scenes/GoalLevel.tscn`.
+
+Внутри GAME_LEVEL находятся HUD, popup-контейнеры и игровое поле. `GameInfoPopup.tscn`, `GameNotification.tscn` или сцены отдельных виджетов допустимы как **встраиваемые UI-компоненты**, но никогда как самостоятельные полноэкранные экраны. Никаких отдельных `ResultsScene`, `IntroScene`, `MicrophoneScene`.
+
+Рекомендуемая структура при реализации Codex (можно объединять мелкие файлы, сохраняя границы модулей):
+
+```text
+project.godot                         # Godot project (уже в репозитории)
+export_presets.cfg                   # Web export (уже в репозитории)
+.github/workflows/web-pages.yml      # build + deploy GitHub Pages
+scenes/
+  Bootstrap.tscn                     # временная заглушка; заменить при Task 1
+  MainMenu.tscn                      # первый реальный тип экрана
+  GoalLevel.tscn                     # второй тип экрана, игровое поле
+ui/
+  GameInfoPopup.tscn                # UI Control, вложен в GoalLevel
+  GameNotification.tscn             # компактное событийное уведомление
+scripts/
+  app/app_controller.gd             # переходы MAIN_MENU <-> GAME_LEVEL, reset
+  app/config_service.gd             # JSON -> Dictionary с проверкой схемы
+  app/text_catalog.gd               # ключи, плейсхолдеры, случайные реплики
+  goal/goal_session.gd              # голы/попытки/состояния
+  goal/ball_motion.gd               # ground progress + kick flight
+  goal/projection.gd                # progress -> экранные Y, scale, дуга
+  goal/goalkeeper.gd                # постоянный patrol по X
+  goal/defender.gd                  # максимум один защитник, X crossing
+  goal/goal_collision.gd            # экранные hitbox; goal line check
+  ui/overlay_manager.gd             # единый слой UI-оверлеев
+  ui/ui_animation_controller.gd     # Tween-анимации по JSON-профилям
+  ui/ui_positioner.gd               # safe anchors для уведомлений
+  voice/voice_input.gd              # интерфейс источников голоса
+  voice/browser_voice_input.gd      # JavaScriptBridge -> browser Web Audio
+  voice/debug_voice_input.gd        # симуляция, только debug
+web/microphone_bridge.js            # создать во время Task 2
+assets/                              # ассеты заменят кодовые заглушки позднее
+data/config/*.json                  # редактируемые конфигурации
+references/goal_scene_original.png # референс, НЕ фон и НЕ Web-ассет
+```
+
+**Важно:** стартовые `Bootstrap.tscn`/`bootstrap.gd` уже включены только для работоспособного экспортного pipeline. Codex не должен удалять `project.godot`, `export_presets.cfg`, workflow или документы при замене стартовой сцены.
+
+## 2. Данные Godot вместо public/ и HTTP-fetch
+
+Единственный редактируемый каталог конфигураций расположен в `res://data/config/`:
+
+| Путь внутри Godot | Содержимое |
+|---|---|
+| `res://data/config/ui.ru.json` | 66 локализованных записей: карточки меню, инструкции, HUD, советы, ошибки, исходы |
+| `res://data/config/ui_animations.json` | 21 профиль UI-анимаций и анимаций игрового мира |
+| `res://data/config/ui_layout.json` | нормализованные размещения, safe anchors, размеры/масштаб |
+| `res://data/config/gameplay.json` | значения для настройки голоса, скоростей, столкновений, счета и задержек |
+| `res://data/config/asset_manifest.json` | будущие пути `res://assets/...`; отсутствие PNG не ломает blockout |
+
+Читать через `FileAccess.get_file_as_string(...)` + `JSON.parse_string(...)` с проверкой структуры, отсутствующие и некорректные файлы сообщать в консоль и понятным ошибочным состоянием, не создавать невидимый сломанный UI. `export_presets.cfg` уже содержит `include_filter="data/config/*.json,web/*.js"`: без этого Godot Web может не упаковать произвольные JSON/JS в PCK.
+
+**Редактирование:** меняем `data/config/ui.ru.json` или профили анимаций, коммитим изменения в GitHub — GitHub Actions пересобирает Web и обновляет Pages. В отличие от Vite, редактирование файла в исходном репозитории **не меняет уже опубликованный PCK мгновенно**, требуется новая сборка. Не хардкодить пользовательские тексты в GDScript (кроме технических ошибок запуска конфигурации).
+
+## 3. Глобальная навигация и состояния
+
+```text
+MAIN_MENU
+  card goal -> GOAL_LEVEL / INTRO (поле видно, стартовый попап)
+  card stands/commentator -> disabled
+GOAL_LEVEL:
+  INTRO          -- клик «Начать» --> MIC_REQUEST
+  MIC_REQUEST    -- browser promise OK --> ACTIVE
+  MIC_REQUEST    -- browser promise reject --> MIC_ERROR
+  MIC_ERROR      -- retry --> MIC_REQUEST
+  ACTIVE         -- first motion --> attemptsUsed += 1 (один раз)
+  ACTIVE         -- goal / intercept / keeper save --> RESOLVING_GOAL/FAIL
+  RESOLVING_*    -- after ~2.5s --> ACTIVE(new ball) or FINAL
+  FINAL          -- retry --> ACTIVE(fresh round, no intro)
+                 -- menu --> MAIN_MENU
+  ANY            -- reset --> MAIN_MENU
+```
+
+Игровая логика на `ACTIVE` работает в `_process(delta)` или `_physics_process(delta)` согласно одному выбранному циклу; при показе любого UI-оверлея состояние симуляции остановлено, но UI Tweens и, опционально, декоративная анимация фона могут продолжаться. **Не ставить глобально `get_tree().paused=true`** без учёта режима паузы UI: надёжнее сделать гейт по состоянию с отдельными UI/ambient обновлениями.
+
+`RESET` отменяет анимации, таймеры, voice callbacks, входные события, уничтожает UI, сбрасывает счет/спрайты и возвращает в меню. При незавершённом асинхронном permission request увеличить токен сессии, игнорировать запоздалый ответ и немедленно остановить чужой `MediaStreamTrack`. `RESET` доступен поверх любого popup.
+
+## 4. Рендеринг 2.5D без настоящей 3D-физики
+
+`GoalLevel` сочетает плоские `Node2D`/`Sprite2D`/`Polygon2D` для поля и объектов с отдельным UI `CanvasLayer/Control`. В blockout рисовать простые геометрические примитивы через `_draw()` или стандартные 2D-ноды; позже заменить ресурсами из манифеста, сохранив управляющие скрипты.
+
+- Камера **неподвижна**, вид от первого лица, мяч крупно на переднем плане по центру; ворота строго впереди. Композиция — `references/goal_scene_original.png` из исходного DOCX.
+- Авторитетное положение мяча: `progress` от 0 (старт) до 1 (линия ворот), и `flight_phase`/`flight_fraction` для удара. Не использовать только экранные пиксели как игровые координаты.
+- Проекция: `screen_x = center_x`; `screen_y = project_ground_y(progress) - arc_px * sin(PI * flight_fraction)`; `scale = project_scale(progress)`. На земле `arc_px=0`.
+- Катание: скорость растет с тихим голосом; при молчании почти мгновенная остановка; время продвижения при уверенном тихом голосе от старта до ворот ориентир **3–5 секунд**.
+- Удар: новый резкий импульс один раз подбрасывает мяч, определяя дальность и высоту. Слабый удар приземляется до ворот; попытка продолжается, мяч допускает следующее катание/удар.
+- Защитник: максимум один, пересекает экран по X при фиксированном экранном Y до выхода с противоположной стороны. Проверять **экранное пересечение hitbox при любой высоте мяча**.
+- Вратарь: линейное движение по X с отражением в границах, постоянная скорость (не синусоида). В момент пересечения `progress=1`: X-коллизия ворот/мяча с вратарем -> SAVE либо GOAL. Гол возможен **простым катанием**.
+- Проверять пересечение линии ворот между предыдущим и новым progress (swept crossing); при одновременном столкновении приоритет защитнику. Регистрировать ровно один исход.
+
+## 5. Голос в браузере: Web Audio API → JavaScriptBridge → GDScript
+
+**Не полагаться без проверки на `AudioStreamMicrophone` + `AudioEffectCapture` в Web export.** В современном однопоточном Web export аудио имеет ограничения (в частности, аудиоэффекты для sample playback); для критичного голосового взаимодействия закладываем управляемый browser-native мост.
+
+Во время **Task 2** Codex создаёт `web/microphone_bridge.js` — модуль без сетевых запросов и без сторонних библиотек. Он должен:
+
+1. Запрашивать `navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: false}})` непосредственно после клика «Начать». `autoGainControl` оставляем выключенным, чтобы не сглаживать силу импульса; опции — первоначальные, проверяем в реальном браузере и при необходимости даём браузеру их скорректировать.
+2. Создавать `AudioContext` и `AnalyserNode`, подключать `MediaStreamAudioSourceNode` **ТОЛЬКО к анализатору**, никогда к `audioContext.destination`. Не записывать и не отправлять поток голоса никуда.
+3. Отдавать GDScript `status`, `rms`, `peak`, `timestamp` (и возможные error-коды) через небольшой объект `window.MatryoshkaMic`. Загрузка JS исходника через `FileAccess.get_file_as_string("res://web/microphone_bridge.js")` и `JavaScriptBridge.eval(source, true)`, затем `JavaScriptBridge.get_interface("MatryoshkaMic")`; при иной реализации сохранить то же контрактное поведение.
+4. Обрабатывать `pending / active / denied / not-found / busy / error`, повторное подключение, `stop` и очистку ресурсов. Проверять токен сессии, чтобы поздний результат mic permission не возобновлял игру после reset.
+5. На стороне GDScript нормализовать громкость к 0..1 с автокалибровкой фонового порога (без отдельного экрана), различать **продолжительное тихое управление** и **короткий attack/удар**, иметь release + cooldown и не многократно бить на непрерывном звуке. Все параметры в `gameplay.json` являются стартовыми для дальнейшей настройки.
+6. Сбрасывать состояние детектора импульсов при показе/закрытии overlays; HUD-индикатор громкости можно обновлять, но механика в паузе игнорирует вход.
+
+`VoiceFrame` — `normalized_loudness:float`, `rolling_intensity:float`, `kick_impulse_strength:float` (отсутствие удара = 0), `timestamp_ms:int`. Один интерфейс для `BrowserVoiceInput` и скрытого `DebugVoiceInput`; игровая механика **не знает**, какой источник выбран.
+
+**Важно:** в облачном Codex можно проверить GDScript, headless-экспорт и debug-управление, но **реальный микрофон проверяется человеком в браузере** через опубликованную HTTPS-ссылку. GitHub Actions не может удостоверить доступ к физическому микрофону. При ошибке интерфейс показывает предупреждение + «Повторить подключение», без публичного управления клавиатурой. На desktop Godot редакторе используется debug input или отдельный адаптер, а не выдуманная подмена browser getUserMedia.
+
+## 6. Скрытый симулятор голоса и тестируемость
+
+`DebugVoiceInput` разрешён только в режиме разработчика, например `?debug=1` в опубликованной веб-ссылке (проверять query через `JavaScriptBridge.eval`), либо при явном локальном editor/debug флаге. Клавиши W — катание, Space — удар, 1/2/3 — сила. Обычному игроку клавиатурное управление **недоступно** и не заменяет отказавший микрофон.
+
+Конфиг первого прототипа `data/config/gameplay.json` задаёт 3 гола / 6 попыток; начальная попытка `READY`, первая фактическая подвижка увеличивает `attemptsUsed` **один раз**. При слабом ударе и приземлении попытка не заканчивается. `goals == 3` — победа; `attemptsUsed == 6` означает завершение только после разрешения исхода шестого мяча. Тестировать все четыре tier результата (3,2,1,0).
+
+## 7. Общее UI и программные анимации
+
+UI делаем на `Control`, `PanelContainer`, `HBoxContainer`, `TextureRect`, `Label`, `Button` с сохранением композиции. Временные пиктограммы рисуются кодом; 3 пункта инфографики в **один горизонтальный ряд**. `GameInfoPopup` — общий заменяемый контейнер для intro/intermediate/final/mic_error; `GameNotification` — компактный вариант той же системы для гола/неудачи. Все возникают **поверх уже видимого уровня**. Intro показываем при входе из меню, но не перед каждым раундом или «Повторить».
+
+**Вся анимация элементов интерфейса создаётся кодом Godot Tween.** Профили брать из `data/config/ui_animations.json` по конкретным ID (`intro.panel`, `goalEvent.tip`, `failEvent.callout`, `hud.goals`, …). Контроллер переводит поля:
+
+- `durationMs`/`delayMs` -> секунды для `Tween`;
+- `easing` (`ease-in`, `ease-out`, `ease-in-out`) -> соответствующие `Tween.set_ease(...)` и единый подход к trans;
+- `from/to.opacity` -> alpha `CanvasItem.modulate.a`;
+- `from/to.scale`, `scaleX/scaleY` -> `Control.scale`/`Node2D.scale`, `pivot_offset` для UI;
+- `from/to.yPx` -> относительное смещение от базового положения;
+- `staggerMs`, `loopMs`, `smoothingMs` -> отдельные регулируемые последовательности/loop/smoothing.
+
+Никаких GIF, видео-оверлеев, AnimationPlayer с намертво зашитыми таймингами UI и hardcoded анимационных длительностей. Для `durationMs=0` применить конечное состояние немедленно. `instruction.visual.mode=icon|codeAnimation` сменяет **только** внутреннюю графику соответствующего пункта, остальные блоки попапа не трогаем.
+
+`UIPositioner` для короткой надписи проверяет свободные кандидаты из `data/config/ui_layout.json` против текущих прямоугольников ворот, вратаря, защитника, мяча, HUD и Reset. Если первый кандидат перекрыт — следующий; **нельзя фиксированно ставить подписи поверх ворот**. Intro/final по центру перекрывают поле частично намеренно.
+
+### Попап после гола
+
+При GOAL: игровая логика приостанавливается, запускается кодовая деформация сетки + праздничный UI эффект, компактно появляются «ГОЛ!», актуальный счёт и одна случайная **содержательная тренерская подсказка** из `ui.ru.json`; всё событие ~2–3 сек, затем новая попытка или финал. При FAIL: мяч останавливается, в свободной зоне показывается маленькая надпись о перехвате/сейве, без центральной модалки. Случайные реплики не должны подсказывать невозможное управление X или уход над защитником: защитник блокирует экранное пересечение даже летящего мяча.
+
+## 8. CI/CD, экспорт и размещение на GitHub Pages
+
+GitHub хранит **исходники** (`project.godot`, `.tscn`, `.gd`, `data/config/*.json`, документацию и ассеты). Не хранить собранные `.wasm/.pck` в Git: workflow генерирует их заново.
+
+`/.github/workflows/web-pages.yml` автоматически запускается на:
+- `push` в `main` — собрать Web и развернуть на GitHub Pages;
+- `pull_request` — собрать для проверки **без публикации**;
+- `workflow_dispatch` — ручной запуск из GitHub Actions.
+
+Workflow использует GitHub-hosted `ubuntu-24.04`, в build job — контейнер `barichello/godot-ci:4.5.2` с Godot и официальными export templates, headless asset import и `godot --headless --path . --export-release Web build/web/index.html`. `actions/upload-pages-artifact@v3` отдаёт результат второму job; `actions/deploy-pages@v4` публикует сайт. Build на `main` не может стать действующей публикацией, если job упал. Публикация требует однократного включения Pages / Source: **GitHub Actions** и права `pages:write,id-token:write` для deploy job.
+
+Godot Web экспорт — **однопоточный**: GitHub Pages не обязан задавать COOP/COEP заголовки, необходимые для многопоточной сборки. `export_presets.cfg` содержит `variant/thread_support=false` и `platform="Web"`. На Pages HTTPS — это подходящий secure context для mic permission. Сам код исполняется **в браузере игрока**, не на GitHub runner; runner нужен **только во время сборки и публикации**.
+
+В этом исходном комплекте лежит **минимальный стартовый Godot проект**, показывающий заглушку. Первая успешная публикация подтвердит CI, **не готовность самой игры и не работу микрофона**. После Task 1 Codex должен заменить заглушку, а после Task 2 — проверить микрофон вручную в браузере.
+
+## 9. Тест-план и критерии готовности
+
+1. `python3 tools/validate_handoff.py` проверяет спецификации и 5 JSON-конфигов; `godot --headless --path . --editor --import` импортирует ресурсы.
+2. `godot --headless --path . --export-release Web build/web/index.html` формирует `.html/.wasm/.pck` (нужны export templates Godot 4.5.2).
+3. `tests/config_smoke_test.gd` проверяет, что Godot видит конфиги `res://data/config` и читает GDD-константы 3/6/1.
+4. Браузер после Task 1: меню без общего заголовка, 3 карточки, только первая активна, цель/3 пиктограммы в ряд поверх blockout поля, глобальный Reset, нет новых полноэкранных result scenes.
+5. После Task 2: permission prompt по клику, denied/missing/retry, HUD RMS, один удар на один резкий импульс, voice lock на popup, нет аудио в динамики; тестировать **вручную в реальном браузере**, не объявлять подтверждённым по CI.
+6. После Task 3/4: прогресс/дуга/малый недолёт, перехват даже высокого мяча, горизонтальный keeper, 3/6, только после разрешения шестой попытки финал, tier-фразы, reset и retry.
+7. После Task 5: изменить `goalEvent.tip.enter.durationMs`, собрать снова, проверить только изменение подсказки; аналогично `failEvent.callout.enter.durationMs`; никаких изображений видеопопапов.
+8. После каждого этапа Codex должен сообщать, какие тесты действительно выполнил, а какие требуют твоего ручного просмотра по Pages URL.
+
+## 10. Что важно НЕ делать
+
+- Не заменять Godot на Phaser/Vite или Unreal, не использовать C#, .NET или настоящий 3D без отдельного решения.
+- Не писать игру как одну картинку; не вставлять `references/goal_scene_original.png` как игровой фон.
+- Не создавать отдельные полноэкранные сцены для ошибок микрофона, инструкций или результатов.
+- Не внедрять звуки, музыку, автосброс от молчания, дополнительные уровни и другие мини-игры до подтверждения текущего прототипа.
+- Не добавлять реальные архивные видео без источников и прав использования.
+- Не предполагать, что GitHub Actions способен проверить реальный микрофон или визуальное качество без браузерного тестирования.

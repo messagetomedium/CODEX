@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "baseResolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "scaling": "Godot Control anchors + 1920x1080 design space; aspect keep (letterbox); never crop protected game entities",
+  "_editingNote": "Координаты и размеры нормализованы от 0 до 1. Для компактных событий используются не фиксированные координаты, а упорядоченные безопасные якоря + проверка пересечения.",
+  "positions": {
+    "intro": {
+      "anchor": "center",
+      "centerX": 0.5,
+      "centerY": 0.5,
+      "maxWidthFraction": 0.64,
+      "maxHeightFraction": 0.62
+    },
+    "final": {
+      "anchor": "center",
+      "centerX": 0.5,
+      "centerY": 0.5,
+      "maxWidthFraction": 0.52,
+      "maxHeightFraction": 0.56
+    },
+    "microphoneError": {
+      "anchor": "center",
+      "centerX": 0.5,
+      "centerY": 0.5,
+      "maxWidthFraction": 0.5
+    },
+    "hud.round": {
+      "anchor": "top-left",
+      "x": 0.028,
+      "y": 0.035
+    },
+    "hud.goals": {
+      "anchor": "top-right",
+      "x": 0.78,
+      "y": 0.036
+    },
+    "hud.attempts": {
+      "anchor": "top-right",
+      "x": 0.78,
+      "y": 0.087
+    },
+    "hud.voiceMeter": {
+      "anchor": "bottom-left",
+      "x": 0.028,
+      "y": 0.94
+    },
+    "common.reset": {
+      "anchor": "top-right",
+      "x": 0.972,
+      "y": 0.04
+    }
+  },
+  "eventPlacement": {
+    "goal": {
+      "candidates": [
+        {
+          "x": 0.5,
+          "y": 0.15
+        },
+        {
+          "x": 0.22,
+          "y": 0.2
+        },
+        {
+          "x": 0.78,
+          "y": 0.22
+        }
+      ],
+      "maxWidthFraction": 0.36
+    },
+    "fail": {
+      "candidates": [
+        {
+          "x": 0.23,
+          "y": 0.19
+        },
+        {
+          "x": 0.76,
+          "y": 0.22
+        },
+        {
+          "x": 0.5,
+          "y": 0.14
+        },
+        {
+          "x": 0.23,
+          "y": 0.77
+        },
+        {
+          "x": 0.76,
+          "y": 0.77
+        }
+      ],
+      "maxWidthFraction": 0.25
+    }
+  },
+  "protectedElements": [
+    "goalMouth",
+    "goalkeeper",
+    "activeDefender",
+    "ball",
+    "hud.round",
+    "hud.goals",
+    "hud.attempts",
+    "hud.voiceMeter",
+    "common.reset"
+  ],
+  "overlapRule": "For transient notifications, choose first candidate with zero intersection against up-to-date display rectangles of protected objects (+ 16 px padding at base resolution). If no candidate fits, shrink and try again; never force text over the goal or players. For central intro/result popups, overlapping world is allowed by design.",
+  "refComposition": {
+    "ballAtStart": {
+      "x": 0.5,
+      "y": 0.86,
+      "diameterFractionOfWidth": 0.14
+    },
+    "goal": {
+      "x": 0.5,
+      "y": 0.5,
+      "widthFraction": 0.28
+    },
+    "note": "Approximate starting blockout estimates only. Visually tune using references/goal_scene_original.png."
+  }
+}
