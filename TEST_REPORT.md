@@ -82,10 +82,10 @@ Playwright и Chromium (в текущей среде установлены).
 
 Реальные снимки браузера и browser-log.json сохранены вне исходников:
 `/workspace/artifacts/matryoshka-task-1/` (`menu.png`, `intro.png`,
-`after-start.png`, `menu-4x3.png`). Снимки также доступны прямо в GitHub: 
-[меню](docs/review/task-1/menu.png), [инструкция](docs/review/task-1/intro.png), 
-[поле после «Начать»](docs/review/task-1/after-start.png). Каталог `docs/review` 
-содержит `.gdignore`, поэтому эти изображения не попадают в игровую сборку. 
+`after-start.png`, `menu-4x3.png`). Снимки также доступны прямо в GitHub:
+[меню](docs/review/task-1/menu.png), [инструкция](docs/review/task-1/intro.png),
+[поле после «Начать»](docs/review/task-1/after-start.png). Каталог `docs/review`
+содержит `.gdignore`, поэтому эти изображения не попадают в игровую сборку.
 В журнале браузера есть только необязательный
 404 для favicon.ico и предупреждения SwiftShader о ReadPixels при снимках;
 ошибок Godot/GDScript/WebGL-приложения нет. Физический микрофон и вывод на
