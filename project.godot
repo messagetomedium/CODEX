@@ -1,13 +1,15 @@
 ; Godot Engine project configuration file.
-; Minimal bootstrap project included so GitHub Actions can build a Web page
-; before Codex implements the menu and the first gameplay level.
+; Tasks 0–1: main menu and a static, silent football blockout.
 config_version=5
 
 [application]
 config/name="Matryoshka - Voice Football Prototype"
 config/description="Browser-based Godot prototype based on the approved Matryoshka GDD"
-run/main_scene="res://scenes/Bootstrap.tscn"
+run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
+
+[autoload]
+App="*res://scripts/app/app_controller.gd"
 
 [display]
 window/size/viewport_width=1920

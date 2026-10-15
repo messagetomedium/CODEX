@@ -1,37 +1,39 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Optional: run inside Codex Cloud Linux environment if Godot editor is absent.
-# This script is not used by GitHub Actions: the Action uses a pinned godot-ci image.
+# Godot standard + the non-threaded Web templates only. No project files changed.
 VERSION="4.5.2"
 RELEASE="stable"
-TARGET="${HOME}/.local/bin"
-TEMPLATES="${HOME}/.local/share/godot/export_templates/${VERSION}.${RELEASE}"
+TARGET="${GODOT_INSTALL_DIR:-${HOME}/.local/bin}"
+TEMPLATES="${XDG_DATA_HOME:-${HOME}/.local/share}/godot/export_templates/${VERSION}.${RELEASE}"
 PREFIX="https://github.com/godotengine/godot-builds/releases/download/${VERSION}-${RELEASE}"
+ENGINE_ARCHIVE="Godot_v${VERSION}-${RELEASE}_linux.x86_64.zip"
+TEMPLATE_ARCHIVE="Godot_v${VERSION}-${RELEASE}_export_templates.tpz"
 
-if command -v godot >/dev/null 2>&1 && godot --headless --version | grep -q "^${VERSION}[.]" && test -f "${TEMPLATES}/web_release.zip"; then
-    echo "Godot ${VERSION} and Web export templates are already installed."
+GODOT_CANDIDATE="$(command -v godot || true)"
+if test -x "${TARGET}/godot"; then GODOT_CANDIDATE="${TARGET}/godot"; fi
+if test -n "$GODOT_CANDIDATE" && "$GODOT_CANDIDATE" --headless --version | grep -q "^4[.]5[.]2[.]stable[.]" \
+    && test -f "${TEMPLATES}/web_nothreads_release.zip" && test -f "${TEMPLATES}/web_nothreads_debug.zip"; then
+    echo "Godot ${VERSION} and non-threaded Web export templates are already installed."
     exit 0
 fi
-
-for command in curl unzip; do
-    if ! command -v "$command" >/dev/null 2>&1; then
-        echo "Missing dependency: $command" >&2
-        exit 1
-    fi
+for dependency in curl unzip sha512sum; do
+    command -v "$dependency" >/dev/null 2>&1 || { echo "Missing dependency: $dependency" >&2; exit 1; }
 done
-
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
-curl -fLS --retry 3 "${PREFIX}/Godot_v${VERSION}-${RELEASE}_linux.x86_64.zip" -o "${WORK_DIR}/godot.zip"
-curl -fLS --retry 3 "${PREFIX}/Godot_v${VERSION}-${RELEASE}_export_templates.tpz" -o "${WORK_DIR}/templates.tpz"
-
-unzip -q "${WORK_DIR}/godot.zip" -d "$WORK_DIR"
-unzip -q "${WORK_DIR}/templates.tpz" -d "$WORK_DIR"
+curl -fLS --retry 3 "${PREFIX}/SHA512-SUMS.txt" -o "${WORK_DIR}/SHA512-SUMS.txt"
+curl -fLS --retry 3 "${PREFIX}/${ENGINE_ARCHIVE}" -o "${WORK_DIR}/${ENGINE_ARCHIVE}"
+curl -fLS --retry 3 "${PREFIX}/${TEMPLATE_ARCHIVE}" -o "${WORK_DIR}/${TEMPLATE_ARCHIVE}"
+(
+    cd "$WORK_DIR"
+    awk -v engine="$ENGINE_ARCHIVE" -v templates="$TEMPLATE_ARCHIVE" '$2 == engine || $2 == templates' SHA512-SUMS.txt > selected.sha512
+    test "$(wc -l < selected.sha512)" -eq 2
+    sha512sum --check selected.sha512
+)
+unzip -q "${WORK_DIR}/${ENGINE_ARCHIVE}" -d "$WORK_DIR"
 mkdir -p "$TARGET" "$TEMPLATES"
 install -m 755 "${WORK_DIR}/Godot_v${VERSION}-${RELEASE}_linux.x86_64" "${TARGET}/godot"
-cp -a "${WORK_DIR}/templates/." "$TEMPLATES/"
-export PATH="${TARGET}:${PATH}"
-printf 'Godot installed at %s\n' "${TARGET}/godot"
-godot --headless --version
-printf '%s\n' 'If future terminal sessions cannot find Godot, run: export PATH="$HOME/.local/bin:$PATH"'
+unzip -q -o -j "${WORK_DIR}/${TEMPLATE_ARCHIVE}" 'templates/web_nothreads_*.zip' 'templates/version.txt' -d "$TEMPLATES"
+"${TARGET}/godot" --headless --version
+printf 'Godot installed at %s; add this directory to PATH for future shells.\n' "$TARGET"
