@@ -135,7 +135,7 @@ func _init() -> void:
 	sim.spawn_defender(1, 0.55)
 	sim.spawn_defender(-1, 0.645)
 	sim.spawn_defender(1, 0.74)
-	sim.ball.progress = 0.72
+	sim.ball.progress = sim.defenders[2].depth
 	sim.ball.has_moved = true
 	sim.defenders[0].x = 0.1
 	sim.defenders[1].x = 0.9
@@ -148,10 +148,10 @@ func _init() -> void:
 	check(sim.defenders == frozen and sim.keeper_time == frozen_time, "An overlay outcome freezes every defender and the patterned keeper")
 	sim = Simulation.new(config, layout)
 	sim.spawn_defender(1, 0.74)
-	sim.ball.progress = 0.72
+	sim.ball.progress = sim.defenders[0].depth
 	sim.ball.has_moved = true
 	var full_half_width: float = sim.projection.defender_half_width(0.74)
-	sim.defenders[0].x = 0.5 + (full_half_width + sim.projection.radius(0.72) - 1) / 1920
+	sim.defenders[0].x = 0.5 + (full_half_width + sim.projection.radius(sim.ball.progress) - 1) / 1920
 	sim.step(0.001, voice)
 	check(sim.outcome.is_empty(), "A barely grazing defender silhouette does not intercept the ball core")
 	sim.defenders[0].x = 0.5

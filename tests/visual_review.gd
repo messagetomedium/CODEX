@@ -50,6 +50,18 @@ func _run() -> void:
 			level.spawner.step(0.016, level.simulation)
 			level.simulation.step(1, Voice.new())
 			level.world.present(level.simulation)
+	elif mode in ["depth-separated", "depth-contact"]:
+		var sim: RefCounted = level.simulation
+		sim.spawn_defender(1, 0.74)
+		sim.defenders[0].x = 0.5
+		sim.ball.progress = 0.8 if mode == "depth-separated" else sim.defenders[0].depth
+		sim.ball.has_moved = true
+		sim.step(0.001, Voice.new())
+		if sim.outcome != ("" if mode == "depth-separated" else "intercept"):
+			push_error("Depth review produced the wrong collision outcome: " + sim.outcome)
+		level._process(0.016)
+		if (level.state == level.State.ACTIVE) != (mode == "depth-separated"):
+			push_error("Depth review did not keep separated play active / resolve contact")
 	else:
 		var settings: Dictionary = level.simulation.settings.duplicate(true)
 		settings.goalkeeper.patrolLeftX = 0.495 if mode == "catch" else 0.37

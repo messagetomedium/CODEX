@@ -43,8 +43,10 @@ grep -q 'Voice detector checks: .*failed: 0' build/checks/voice.log
 grep -q 'Voice detector checks: .*failed: 0' build/checks/voice-debug.log
 grep -q 'Task 2 integration checks: .*failed: 0' build/checks/task-2.log
 run_godot mechanics --script res://tests/goal_simulation_test.gd
+run_godot depth --script res://tests/depth_collision_test.gd
 run_godot task-3 --script res://tests/task_3_smoke_test.gd
 grep -q 'Goal simulation checks: .*failed: 0' build/checks/mechanics.log
+grep -q 'Depth collision checks: .*failed: 0' build/checks/depth.log
 grep -q 'Task 3 integration checks: .*failed: 0' build/checks/task-3.log
 run_godot round --script res://tests/round_progress_test.gd
 run_godot task-4 --script res://tests/task_4_smoke_test.gd
@@ -59,4 +61,4 @@ run_godot web --export-release Web build/web/index.html
 for artifact in index.html index.js index.wasm index.pck; do
     test -s "build/web/$artifact"
 done
-echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3/4 integration, three-round campaign, soft collisions, voice detector, JS bridge, Web artifacts'
+echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3/4 integration, three-round campaign, depth-aware soft collisions, voice detector, JS bridge, Web artifacts'

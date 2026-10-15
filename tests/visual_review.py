@@ -31,7 +31,7 @@ with sync_playwright() as p:
       navigator.mediaDevices.getUserMedia = () => { throw Error('Review fixture requested microphone'); };
     ''')
     report = []
-    for mode in ['catch', 'goal', 'frame', 'final-win', 'round-2', 'round-3', 'game-win']:
+    for mode in ['catch', 'goal', 'frame', 'final-win', 'round-2', 'round-3', 'game-win', 'depth-separated', 'depth-contact']:
         page = context.new_page()
         errors, messages = [], []
         page.on('pageerror', lambda e: errors.append(str(e)))
@@ -51,6 +51,8 @@ with sync_playwright() as p:
         page.wait_for_timeout(750)
         png = page.screenshot(path=str(out / (mode + '.png')))
         image = Image.open(io.BytesIO(png)).convert('RGB')
+        if mode == 'depth-separated':
+            assert image.getpixel((640, 400)) == (188, 90, 72), 'Foreground defender did not correctly occlude the distant ball'
         if mode == 'catch':
             def cream_count(left, right):
                 return sum(all(abs(a-b) < 3 for a, b in zip(image.getpixel((x, y)), (245,237,218)))
@@ -67,4 +69,4 @@ with sync_playwright() as p:
         page.close()
     browser.close()
 (out / 'visual-review-log.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
-print('VISUAL PASS: raised gloves/catch, goal feedback, round 2/3 defenders, intermediate victory and game completion at 16:9 and 4:3; no physical microphone')
+print('VISUAL PASS: catch, goal, frame, round 2/3, results at 16:9 and 4:3, separated depth without interception and matching depth with interception; no physical microphone')

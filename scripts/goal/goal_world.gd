@@ -38,14 +38,15 @@ func present(simulation: RefCounted) -> void:
 		var body: Dictionary = simulation.defenders[i]
 		var sprite: Node2D = defenders[i]
 		sprite.visible = body.active
-		sprite.position = Vector2(body.x, body.y) * App.design_size
-		sprite.dimensions.y = projection.defender_height(body.y)
+		var ground_y: float = projection.ground_y(body.depth)
+		sprite.position = Vector2(body.x * App.design_size.x, ground_y)
+		sprite.dimensions.y = projection.defender_height(ground_y / App.design_size.y)
 		sprite.z_index = int(sprite.position.y)
 		sprite.queue_redraw()
 	# Occlusion follows ground depth, independent of the visual flight height.
 	goal.z_index = int(goal.position.y) - 1
 	keeper.z_index = int(keeper.position.y)
-	ball.z_index = int(projection.position(simulation.ball.progress).y + projection.radius(simulation.ball.progress) * ball.shadow_contact)
+	ball.z_index = int(projection.ground_y(simulation.ball.progress))
 	if simulation.keeper_raised:
 		keeper.z_index = ball.z_index + 1
 		keeper.catch_offset = ball.position - keeper.position

@@ -18,7 +18,8 @@
     "stopInertiaMs": 100,
     "scaleAtGoalLine": 0.16,
     "shadowContactRadiusFraction": 0.88,
-    "hitboxRadiusFraction": 0.4
+    "hitboxRadiusFraction": 0.4,
+    "collisionHalfDepthProgress": 0.012
   },
   "kick": {
     "cooldownMs": 450,
@@ -50,6 +51,7 @@
     "laneYNormalizedMin": 0.55,
     "laneYNormalizedMax": 0.74,
     "hitboxInsetFraction": 0.2,
+    "collisionHalfDepthProgress": 0.025,
     "allowEitherDirection": true,
     "hitboxWidthToHeight": 0.67,
     "minDepthAheadOfGoal": 0.05,

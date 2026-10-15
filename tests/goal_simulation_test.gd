@@ -106,24 +106,27 @@ func _init() -> void:
 	sim.ball.kick(1)
 	sim.ball.flight_arc = 200
 	sim.ball.flight_fraction = 0.5
-	sim.ball.progress = 0.6
 	sim.ball.has_moved = true
-	sim.spawn_defender(1, 0.5)
+	sim.spawn_defender(1, 0.74)
+	sim.ball.progress = sim.defenders[0].depth
+	sim.ball.flight_start = sim.ball.progress - sim.ball.flight_distance * sim.ball.flight_fraction
 	sim.defenders[0].x = 0.5
 	sim.step(0.01, voice())
-	check(sim.outcome == "intercept" and sim.ball.height() > 150, "Defender intercepts visible overlap even high in the air")
-	check(is_equal_approx(sim.ball.progress, 0.6), "Intercept freezes at first contact without a bounce")
+	check(sim.outcome == "intercept" and sim.ball.height() > 150, "Defender intercepts an airborne body overlap at matching field depth")
+	check(is_equal_approx(sim.ball.progress, sim.defenders[0].depth), "Intercept freezes at first contact without a bounce")
 
 	sim = model()
 	sim.settings.simulation.maxStepSeconds = 2
-	sim.ball.progress = 0.5
 	sim.ball.has_moved = true
 	sim.spawn_defender(1, 0.7)
+	sim.ball.progress = sim.defenders[0].depth
 	sim.defenders[0].x = 0.1
 	sim.step(2, voice())
 	check(sim.outcome == "intercept" and sim.defenders[0].x < 0.5, "Swept screen collision catches a defender passing between endpoint frames")
 	sim = model()
 	sim.ball.progress = 0.999
+	sim.settings.defender.minDepthAheadOfGoal = 0
+	sim.settings.defender.laneYNormalizedMin = 0.5
 	sim.spawn_defender(1, 0.5)
 	sim.defenders[0].x = 0.5
 	sim.step(0.1, voice(1))

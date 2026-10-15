@@ -41,6 +41,9 @@ for item in ui['goal']['intro']['instructions']:
 if game['round']['goalTarget']!=3 or game['round']['maxAttempts']!=6 or game['round']['number']!=1:
     errors.append('Expected 3 goals / 6 attempts / round 1')
 if game['defender']['maxSimultaneous']!=1:errors.append('Round one must have one defender')
+depth_half_width = game['ball'].get('collisionHalfDepthProgress', 0) + game['defender'].get('collisionHalfDepthProgress', 0)
+if not (0 < game['ball'].get('collisionHalfDepthProgress', 0) < 0.05 and 0 < game['defender'].get('collisionHalfDepthProgress', 0) < 0.05):
+    errors.append('Ball and defender need small positive collision depths, in progress units')
 rounds=game.get('rounds', [])
 if [r.get('number') for r in rounds] != [1,2,3]:errors.append('Expected three ordered rounds')
 if [r['defender']['maxSimultaneous'] for r in rounds] != [1,2,3]:errors.append('Expected one/two/three defenders')
@@ -54,6 +57,11 @@ if len(rounds)==3:
         lanes=r['defender']['lanes']
         if len(lanes)<r['defender']['maxSimultaneous'] or any(y<min_lane for y in lanes):errors.append('Defenders need distinct lanes strictly in front of the goal')
         if any(abs(a-b)<game['defender']['minimumLaneSeparation'] for i,a in enumerate(lanes) for b in lanes[i+1:]):errors.append('Defender lanes overlap')
+        start_y=layout['refComposition']['ballAtStart']['y']*layout['baseResolution']['height']
+        start_y+=layout['baseResolution']['width']*layout['refComposition']['ballAtStart']['diameterFractionOfWidth']/2*game['ball']['shadowContactRadiusFraction']
+        goal_y=layout['refComposition']['goal']['y']*layout['baseResolution']['height']
+        depths=[(start_y-y*layout['baseResolution']['height'])/(start_y-goal_y) for y in lanes]
+        if any(abs(a-b)<=2*depth_half_width for i,a in enumerate(depths) for b in depths[i+1:]):errors.append('Defender collision depth bands must remain distinct')
         pattern=r['goalkeeper']['pattern']
         if r['number']>1 and (not pattern or pattern[-1]['to']!=0.5 or any(not 0<=leg['to']<=1 or leg['holdMs']<0 for leg in pattern)):errors.append('Keeper patterns must be bounded and loop back to center')
 if not (game['round']['autoIdleReset']==False and game['options']['soundsEnabled']==False and game['options']['micPlaybackEnabled']==False):

@@ -21,7 +21,7 @@ func _init(config: Dictionary, layout: Dictionary) -> void:
 	reset_ball()
 	keeper_x = layout.refComposition.goal.x
 	for i in int(config.defender.maxSimultaneous):
-		defenders.append({"active": false, "x": 0.0, "y": 0.0, "direction": 1})
+		defenders.append({"active": false, "x": 0.0, "y": 0.0, "depth": 0.0, "direction": 1})
 
 func reset_ball() -> void:
 	ball = Ball.new(settings)
@@ -58,7 +58,8 @@ func spawn_defender(direction: int, lane_y: float, slot: int = -1) -> bool:
 		if body.active and absf(float(body.y) - lane_y) < settings.defender.minimumLaneSeparation:
 			return false
 	var margin: float = projection.defender_half_width(lane_y) / projection.design.x
-	defenders[slot] = {"active": true, "x": -margin if direction >= 0 else 1 + margin, "y": lane_y, "direction": 1 if direction >= 0 else -1}
+	# Y identifies the configured lane; depth governs contacts and projection.
+	defenders[slot] = {"active": true, "x": -margin if direction >= 0 else 1 + margin, "y": lane_y, "depth": projection.depth_at_ground_y(lane_y), "direction": 1 if direction >= 0 else -1}
 	return true
 
 func patrol(x: float, direction: int, seconds: float) -> Vector2:
@@ -121,7 +122,12 @@ func _advance(dt: float, rolling: float) -> void:
 			var body: Dictionary = defenders[i]
 			if not body.active:
 				continue
-			var hit: float = Collision.first_contact(old_position, projection.position(end_progress, end_height), old_radius, projection.radius(end_progress) * settings.ball.hitboxRadiusFraction, projection.defender_rect(old_x[i], body.y), projection.defender_rect(lerpf(old_x[i], body.x, limit), body.y))
+			var half_depth: float = settings.ball.collisionHalfDepthProgress + settings.defender.collisionHalfDepthProgress
+			var depth_window := Collision.depth_interval(previous_progress, end_progress, body.depth, half_depth)
+			if depth_window.x < 0:
+				continue
+			var lane_y: float = projection.ground_y(body.depth) / projection.design.y
+			var hit: float = Collision.first_contact(old_position, projection.position(end_progress, end_height), old_radius, projection.radius(end_progress) * settings.ball.hitboxRadiusFraction, projection.defender_rect(old_x[i], lane_y), projection.defender_rect(lerpf(old_x[i], body.x, limit), lane_y), depth_window)
 			if hit >= 0:
 				hit *= limit
 				if contact < 0 or hit < contact:

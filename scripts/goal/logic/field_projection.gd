@@ -1,5 +1,5 @@
 extends RefCounted
-## One projection shared by drawing and screen-space collisions, at design resolution.
+## Shared projection from logical field depth to flat sprites, at design resolution.
 
 var settings: Dictionary
 var layout: Dictionary
@@ -25,6 +25,15 @@ func position(progress: float, height: float = 0) -> Vector2:
 	var start_y: float = layout.refComposition.ballAtStart.y * design.y
 	var end_y: float = layout.refComposition.goal.y * design.y - radius(settings.ball.progressAtGoalLine) * settings.ball.shadowContactRadiusFraction
 	return Vector2(settings.ball.xNormalized * design.x, lerpf(start_y, end_y, fraction(progress)) - height)
+
+func ground_y(progress: float) -> float:
+	# Compare feet with the ball's ground contact, never with its airborne center.
+	return position(progress).y + radius(progress) * settings.ball.shadowContactRadiusFraction
+
+func depth_at_ground_y(lane_y: float) -> float:
+	var start: float = settings.ball.progressAtStart
+	var finish: float = settings.ball.progressAtGoalLine
+	return lerpf(start, finish, inverse_lerp(ground_y(start), ground_y(finish), lane_y * design.y))
 
 func defender_height(lane_y: float) -> float:
 	var depth := clampf(inverse_lerp(layout.refComposition.goal.y, settings.defender.laneYNormalizedMax, lane_y), 0, 1)
