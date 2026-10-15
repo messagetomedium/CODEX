@@ -24,10 +24,10 @@ jobs:
       XDG_CONFIG_HOME: /root/.config
     steps:
       - uses: actions/checkout@v4
-      - name: Install validation dependency
+      - name: Install validation and font dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends python3
+          apt-get install -y --no-install-recommends python3 fontconfig fonts-dejavu-core
       - name: Validate, import, test and export Web
         run: bash tools/check_tasks_0_1.sh
       - name: Write public build version
