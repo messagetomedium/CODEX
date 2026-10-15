@@ -8,15 +8,27 @@ if ! "$GODOT_BIN" --headless --version | grep -q '^4\.5\.2\.stable\.'; then
 fi
 python3 tools/validate_handoff.py
 mkdir -p build/checks build/web
+report_failure() {
+    python3 - "$1" "build/checks/$1.log" <<'PY_REPORT'
+import re, sys
+from pathlib import Path
+name = sys.argv[1]
+log = re.sub(r"\x1b\[[0-9;]*m", "", Path(sys.argv[2]).read_text())
+excerpt = "\n".join(log.splitlines()[-50:])[-6000:]
+for old, new in [("%", "%25"), ("\r", "%0D"), ("\n", "%0A")]:
+    excerpt = excerpt.replace(old, new)
+print(f"::error title=Godot {name} check failed::{excerpt}")
+PY_REPORT
+}
 run_godot() {
     local check_name="$1"
     shift
     local check_status=0
     "$GODOT_BIN" --headless --path . "$@" > "build/checks/${check_name}.log" 2>&1 || check_status=$?
     cat "build/checks/${check_name}.log"
-    if (( check_status != 0 )); then return "$check_status"; fi
+    if (( check_status != 0 )); then report_failure "$check_name"; return "$check_status"; fi
     # Godot can return zero even on GDScript parse/runtime errors.
-    if grep -Eq 'SCRIPT ERROR:|^ERROR:|instances leaked at exit' "build/checks/${check_name}.log"; then return 1; fi
+    if grep -Eq 'SCRIPT ERROR:|^ERROR:|instances leaked at exit' "build/checks/${check_name}.log"; then report_failure "$check_name"; return 1; fi
 }
 run_godot import --editor --import
 run_godot config --script res://tests/config_smoke_test.gd
