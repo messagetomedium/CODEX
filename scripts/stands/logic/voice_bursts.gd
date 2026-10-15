@@ -7,7 +7,7 @@ var armed := false
 var last_at := -1000.0
 
 func _init(microphone: Dictionary, input: Dictionary) -> void:
-	threshold = microphone.kickLevelMinNormalized
+	threshold = input.get("peak_threshold_normalized",microphone.kickLevelMinNormalized)
 	release = microphone.impulseReleaseThresholdNormalized
 	gap = input.distinct_peak_min_gap_ms / 1000.0
 

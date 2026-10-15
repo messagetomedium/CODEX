@@ -200,7 +200,7 @@ Godot Web экспорт — **однопоточный**: GitHub Pages не о�
 Goal остаётся без звука; разрешён только собственный звук оппонента Stands.
 
 - `scenes/StandsLevel.tscn` / `scripts/stands/stands_level.gd`: состояния
-  INTRO → MIC_REQUEST → TRANSITION → ACTIVE → RESULT; MIC_ERROR с паузой
+  INTRO → TEAM_SELECT → MIC_REQUEST → TRANSITION → ACTIVE → RESULT; MIC_ERROR с паузой
   и восстановлением. Включённые профили определяют число уровней и Next.
 - `scripts/stands/logic/stands_match.gd`: чистые формулы и расписание,
   сегментация времени на границах, однократный финал. Модель получает
@@ -210,6 +210,8 @@ Goal остаётся без звука; разрешён только собс�
   Часы запускаются после готовности микрофона/закрытия инструкции.
 - `voice_bursts.gd`: release/rise и минимальный интервал 350 мс. Использует
   нормализованную громкость существующего VoiceDetector, не меняя его код.
+  Порог Stands читается из `stands_gameplay.input.peak_threshold_normalized`;
+  отсутствие override сохраняет порог микрофонного конфига. Пороги Goal прежние.
   Во время аудио противника детектор не калибруется и не начисляет пики.
 - `opponent_audio.gd`: один AudioStreamPlayer, собственный PCM WAV,
   loop forward; плавное включение 100 мс, немедленное выключение без хвоста.
@@ -228,7 +230,13 @@ Goal остаётся без звука; разрешён только собс�
 - Общий popup получил необязательный дополнительный Control-слот,
   выбор высоты и профилей анимации. Старые значения по умолчанию сохранены.
   Новый экран результатов, второй микрофонный сервис и глобальная пауза
-  SceneTree не добавляются. GoalLevel и весь `scripts/goal/` сохранены.
+  SceneTree не добавляются. Механика `scripts/goal/logic/` сохранена.
+- Последующее уточнение владельца меняет только стартовый HUD GoalLevel:
+  в обеих играх он скрыт до Start. `App.reveal_level_hud` показывает его через
+  `level.hud_enter`; повторные вызовы не перезапускают анимацию. Глобальный
+  «Сброс» остаётся доступен, включая инструкцию и ожидание микрофона.
+  Stands показывает стандартную инструкцию, затем отдельный `standsTeams`
+  с карточками, используя тот же GameInfoPopup/OverlayManager.
 - Конфиги: `stands_gameplay.json`, `stands_teams.json`, `stands_assets.json`,
   `stands_layout.json`; тексты добавлены в общий `ui.ru.json`, профили
   `stands.*` — в общий `ui_animations.json`. Отдельной runtime-копии текстов нет.

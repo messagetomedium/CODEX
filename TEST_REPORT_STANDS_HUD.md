@@ -1,5 +1,8 @@
 # «Трибуны»: упрощение интерфейса по правкам владельца
 
+Следующая итерация с 30-секундными раундами и раздельными стартовыми окнами —
+[TEST_REPORT_SHORT_ROUNDS.md](TEST_REPORT_SHORT_ROUNDS.md).
+
 Godot **4.5.2.stable.official.6ce3de25a**, GDScript, Compatibility,
 однопоточная Web-сборка. Постоянный адрес:
 https://messagetomedium.github.io/CODEX/.

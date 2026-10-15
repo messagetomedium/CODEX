@@ -35,16 +35,20 @@ load('stands_layout.json')
 if len(teams['teams']) != 4 or len({t['id'] for t in teams['teams']}) != 4:
     errors.append('Stands requires four distinct fictional teams')
 levels=stands['levels']
-if any(not levels[f'level_{i}']['enabled'] or levels[f'level_{i}']['duration_seconds'] != 60 for i in range(1,4)):
-    errors.append('All three Stands levels must be enabled and last sixty seconds')
-if [levels[f'level_{i}']['target_peaks'] for i in range(1,4)] != [3,4,5]:
-    errors.append('Stands peak targets must increase from three to five')
-if levels['level_1']['turn_mode'] != 'fixed' or levels['level_1']['turn_seconds'] != 5 or stands['timing']['turn_count'] != 12:
-    errors.append('Stands level one requires twelve fixed five-second turns')
+if stands['round_duration_seconds'] != 30 or any(not levels[f'level_{i}']['enabled'] or levels[f'level_{i}']['duration_seconds'] != 30 for i in range(1,4)):
+    errors.append('All three Stands levels must be enabled and last thirty seconds')
+if [levels[f'level_{i}']['target_peaks'] for i in range(1,4)] != [2,3,4]:
+    errors.append('Stands peak targets must increase from two to four')
+if levels['level_1']['turn_mode'] != 'fixed' or levels['level_1']['turn_seconds'] != 5 or stands['timing']['turn_count'] != 6:
+    errors.append('Stands level one requires six fixed five-second turns')
 if any(levels[f'level_{i}']['turn_mode'] != 'random' or levels[f'level_{i}']['turn_seconds_min'] != 3 or levels[f'level_{i}']['turn_seconds_max'] != 6 for i in [2,3]):
     errors.append('Higher Stands levels require three-to-six-second turns')
 if not sum([stands['score']['loudness_weight'],stands['score']['distinct_peak_weight']]) == 1:
     errors.append('Stands score weights must sum to one')
+if not 0 <= stands['score']['loudness_weight'] < stands['score']['distinct_peak_weight'] <= 1:
+    errors.append('Stands support must be driven primarily by distinct peaks')
+if not 0 <= game['microphone']['impulseReleaseThresholdNormalized'] < stands['input']['peak_threshold_normalized'] <= 1:
+    errors.append('Stands peak threshold must exceed release and stay within normalized volume')
 if not (levels['level_1']['opponent_loss_per_full_turn'] < levels['level_2']['opponent_loss_per_full_turn'] < levels['level_3']['opponent_loss_per_full_turn']):
     errors.append('Stands opponent must become stronger each level')
 if not (R/stands['audio']['path'].removeprefix('res://')).is_file() or stands['timing']['speaker_fade_ms'] > 120:

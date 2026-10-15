@@ -65,7 +65,12 @@ func _run() -> void:
 	level = current_scene
 	level.set_process(false)
 	check(level.name=="StandsLevel" and level.state==level.State.INTRO,"Menu opens the second level type without replacing the menu framework")
-	check(level.overlays.popup.instruction_items.size()==3 and level.picker.cards.size()==4,"The shared popup contains three horizontal instructions and four team cards")
+	check(level.overlays.popup.instruction_items.size()==3 and level.picker==null,"Entry contains only the standard three-rule instruction, without team cards")
+	check(not level.hud.visible and level.world.visible and not level.clock.started,"Only the world appears behind the instruction; gameplay HUD and timer stay off")
+	level.overlays.popup.action_buttons[0].pressed.emit()
+	await create_timer(.4).timeout
+	check(level.state==level.State.TEAM_SELECT and level.overlays.popup.instruction_items.is_empty() and level.picker.cards.size()==4,"Continue opens a separate team picker in the common popup")
+	check(not level.hud.visible and not level.clock.started and level.voice_input.status=="idle","Team choice keeps the HUD hidden and never requests microphone or starts the timer")
 	for card in level.picker.cards:
 		check(card.get_node("Description").size.x<=card.size.x and card.get_node("Description").get_visible_line_count()>=card.get_node("Description").get_line_count(),"Team description wraps completely within its card")
 	check(not level.audio.playing and not level.clock.started,"Intro has no opponent audio or running timer")
@@ -77,7 +82,7 @@ func _run() -> void:
 	level.voice_input = source
 	level.now_source = func():return test_ms
 	level.overlays.popup.action_buttons[0].pressed.emit()
-	check(source.starts==1 and not level.clock.started,"One shared microphone request starts from the user's Start gesture")
+	check(source.starts==1 and not level.clock.started and level.hud.visible,"Start reveals the HUD and requests one shared microphone, but waits to start the clock")
 	level._process(.016)
 	await create_timer(.4).timeout
 	check(level.state==level.State.ACTIVE and level.clock.started and level.match_model.elapsed==0,"The timer starts only after microphone readiness and popup exit")
@@ -105,7 +110,7 @@ func _run() -> void:
 	check(level.state==level.State.ACTIVE and is_equal_approx(level.match_model.elapsed,paused_elapsed+.1),"Retry resumes the same match, excluding the whole pause")
 	check(source.starts==2,"Only error retry re-requests the microphone")
 	play_to_end()
-	check(level.state==level.State.RESULT and level.match_model.elapsed==60 and level.match_model.outcome=="win","Real controller voice sampling can win the first sixty-second round")
+	check(level.state==level.State.RESULT and level.match_model.elapsed==30 and level.match_model.outcome=="win","Real controller voice sampling can win the first thirty-second round")
 	check(not level.audio.playing and level.match_model.finish_count==1,"Completion stops all opponent audio and latches once")
 	check(not level.overlays.popup.action_buttons[2].disabled,"Winning round one unlocks the next round")
 	var final_score: float = level.match_model.score
@@ -117,25 +122,25 @@ func _run() -> void:
 		check(level.level_index==number-1 and level.state==level.State.ACTIVE and level.match_model.score==50 and level.match_model.elapsed==0,"Next resets score and clock without replaying team selection")
 		check(source.starts==2,"Next reuses the existing microphone instead of opening another stream")
 		play_to_end()
-		check(level.state==level.State.RESULT and level.match_model.outcome=="win" and level.match_model.elapsed==60,"Controller voice input completes the higher difficulty")
+		check(level.state==level.State.RESULT and level.match_model.outcome=="win" and level.match_model.elapsed==30,"Controller voice input completes the higher difficulty")
 		check(not level.audio.playing and level.match_model.total_peaks>0,"Higher-level peaks count while end audio is off")
 	check(level.results.size()==3 and level.overlays.popup.action_buttons.size()==2,"Third victory shows game completion through the common result popup")
 	level.overlays.popup.action_buttons[0].pressed.emit()
 	await frames()
 	check(level.level_index==0 and level.results.is_empty() and level.match_model.score==50 and level.match_model.elapsed==0,"Play again resets the entire three-level sequence")
 	# Finish a real silent match and test loss/retry/menu rather than forcing a result.
-	tick(60000,0)
+	tick(30000,0)
 	check(level.match_model.outcome=="loss" and level.overlays.popup.action_buttons[2].disabled,"Silence loses and cannot unlock Next")
 	level.overlays.popup.action_buttons[0].pressed.emit()
 	await frames()
 	check(level.level_index==0 and level.match_model.elapsed==0 and level.match_model.score==50,"Retry restarts only the current difficulty")
 	# Score exactly fifty after an allowed full match to exercise a draw panel.
 	var model: RefCounted=level.match_model
-	model.advance_to(55)
+	model.advance_to(25)
 	model.score_base=50
 	model.score=50
-	model.advance_to(60)
-	test_ms=level.clock.origin_ms+60000
+	model.advance_to(30)
+	test_ms=level.clock.origin_ms+30000
 	level._process(.016)
 	check(model.outcome=="draw" and level.overlays.popup.action_buttons[2].disabled,"Draw also offers retry and keeps Next unavailable")
 	app.reset_button.pressed.emit()
@@ -143,6 +148,8 @@ func _run() -> void:
 	check(current_scene.name=="MainMenu" and source.disposed,"Global Reset disposes microphone and returns to menu from results")
 	app.open_stands()
 	await frames()
+	current_scene.overlays.popup.action_buttons[0].pressed.emit()
+	await create_timer(.4).timeout
 	current_scene.overlays.popup.action_buttons[0].pressed.emit()
 	await frames()
 	check(current_scene.state==current_scene.State.MIC_ERROR,"A missing native browser microphone uses the existing honest error popup")

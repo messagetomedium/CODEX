@@ -44,6 +44,7 @@ func _run() -> void:
 	check(level.name == "GoalLevel", "Goal card opens GoalLevel")
 	check(level.state == level.State.INTRO, "Entry shows instruction state")
 	check(level.world.visible, "World exists under overlay")
+	check(not level.hud.visible, "Goal entry hides all level HUD elements behind the instruction")
 	check(level.world.get_child_count() == 4, "Independent goal, keeper, defender, ball")
 	check(level.world.ball.position.x == app.design_size.x / 2, "Ball centered")
 	check(level.world.goal.position.x == app.design_size.x / 2, "Goal centered")
@@ -65,6 +66,7 @@ func _run() -> void:
 	popup.action_buttons[0].pressed.emit()
 	await create_timer(0.6).timeout
 	check(level.state == level.State.MIC_ERROR, "Native Start reports that browser microphone requires the Web build")
+	check(level.hud.visible, "Start reveals the Goal HUD even while the microphone needs attention")
 	check(level.overlays.popup.instruction_items.is_empty(), "Intro replaced within same reusable popup")
 	check(level.world.ball.position == ball_position and level.world.keeper.position == keeper_position, "Start does not start gameplay")
 	check(level.hud.get_node("Goals").text == app.texts.text("goal.hud.goals", {"goals": 0, "goalTarget": 3}), "No goals simulated")

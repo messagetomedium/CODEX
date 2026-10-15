@@ -85,9 +85,12 @@ with sync_playwright() as p:
     page.mouse.click(640,360);page.wait_for_timeout(750)
     page.screenshot(path=str(out/'normal-intro.png'))
     assert page.evaluate('window.__micRequests')==0
-    # Select blue team in the existing popup, then request microphone.
-    page.mouse.click(510,454);page.wait_for_timeout(250)
-    page.mouse.click(640,590)
+    # Continue opens a second popup, without starting microphone/audio/timer.
+    page.mouse.click(640,495);page.wait_for_timeout(650)
+    page.screenshot(path=str(out/'normal-team-picker.png'))
+    assert page.evaluate('window.__micRequests==0 && window.__crowd.length==0')
+    page.mouse.click(510,370);page.wait_for_timeout(250)
+    page.mouse.click(640,532)
     page.wait_for_function("window.MatryoshkaMic?.status==='denied'",timeout=15000)
     page.wait_for_timeout(500)
     assert page.evaluate('window.__crowd.length')==0,'Sound started before microphone readiness'
@@ -112,9 +115,9 @@ with sync_playwright() as p:
         for attempt in range(1,4):
             # Readback screenshots can block a software WebGL renderer and distort
             # short voice bursts. Let normal frames run, then inspect the result.
-            wait_ms=55800 if number==1 and attempt==1 else 60800
-            page.wait_for_timeout(30000)
-            page.wait_for_timeout(wait_ms-30000)
+            wait_ms=25800 if number==1 and attempt==1 else 30800
+            page.wait_for_timeout(min(30000,wait_ms))
+            if wait_ms>30000:page.wait_for_timeout(wait_ms-30000)
             assert final_visible(page),f'Round {number} did not finish at its deadline'
             assert not page.evaluate('window.__opponentActive'),'Round result left crowd audio running'
             page.wait_for_timeout(200)
@@ -143,8 +146,8 @@ with sync_playwright() as p:
             page.screenshot(path=str(out/f'normal-level-{number+1}.png'))
     # No new microphone request during any round transition.
     assert page.evaluate('window.__micRequests')==2,'Next created a second microphone session'
-    expected_turns=6*sum(result['attempts'] for result in results)
-    assert page.evaluate('window.__turnStarts')==expected_turns and page.evaluate('window.__turnStops')==expected_turns,'Each played round needs six audible opponent turns'
+    expected_turns=3*sum(result['attempts'] for result in results)
+    assert page.evaluate('window.__turnStarts')==expected_turns and page.evaluate('window.__turnStops')==expected_turns,'Each thirty-second round needs three audible opponent turns'
     assert page.evaluate('window.__crowd.every(x=>x.stopped!==null || x.ended)'),'A looping opponent source was not stopped'
     page.set_viewport_size({'width':1024,'height':768});page.wait_for_timeout(400)
     page.screenshot(path=str(out/'normal-game-final-4x3.png'))
@@ -154,7 +157,8 @@ with sync_playwright() as p:
     assert not page.evaluate('window.__opponentActive')
     # Reset while permission is pending must cancel a late grant.
     page.evaluate("window.__micMode='pending'")
-    page.mouse.click(640,360);page.wait_for_timeout(650);page.mouse.click(640,590)
+    page.mouse.click(640,360);page.wait_for_timeout(650)
+    page.mouse.click(640,495);page.wait_for_timeout(650);page.mouse.click(640,532)
     page.wait_for_function('!!window.__releasePending')
     page.mouse.click(1190,49);page.wait_for_timeout(650)
     page.evaluate('window.__releasePending()')

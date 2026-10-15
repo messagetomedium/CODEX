@@ -11,7 +11,7 @@ parser.add_argument('--output',default='/workspace/artifacts/matryoshka-stands')
 parser.add_argument('--modes',nargs='+')
 args=parser.parse_args()
 out=Path(args.output);out.mkdir(parents=True,exist_ok=True)
-modes=args.modes or ['intro','opponent','player','level-2','level-3','win','loss','draw','game-win']
+modes=args.modes or ['intro','teams','opponent','player','level-2','level-3','win','loss','draw','game-win']
 with sync_playwright() as p:
     browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader','--disable-dev-shm-usage'])
     context=browser.new_context(viewport={'width':1280,'height':720})
@@ -30,7 +30,7 @@ with sync_playwright() as p:
         page.goto(args.url,wait_until='domcontentloaded')
         page.wait_for_function('window.__ready===true',timeout=60000)
         page.screenshot(path=str(out/(mode+'.png')))
-        if mode in ['intro','level-3','game-win']:
+        if mode in ['intro','teams','level-3','game-win']:
             page.set_viewport_size({'width':1024,'height':768});page.wait_for_timeout(400)
             page.screenshot(path=str(out/(mode+'-4x3.png')))
         bad=[x for x in messages if 'SCRIPT ERROR' in x or x.startswith('error: ERROR:')]

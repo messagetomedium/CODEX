@@ -65,11 +65,11 @@
       "widthFraction": 0.5,
       "heightFraction": 0.12
     },
-    "standsIntro": {
+    "standsTeams": {
       "centerX": 0.5,
       "centerY": 0.51,
       "maxWidthFraction": 0.86,
-      "maxHeightFraction": 0.8
+      "maxHeightFraction": 0.6
     }
   },
   "eventPlacement": {
@@ -263,25 +263,17 @@
       "heightFraction": 0.08,
       "fontSize": 22
     },
-    "standsIntro": {
-      "heightFraction": 0.8,
+    "standsTeams": {
       "paddingFraction": 0.025,
       "titleY": 0.025,
       "titleHeight": 0.05,
       "objectiveY": 0.081,
       "objectiveHeight": 0.035,
-      "rowY": 0.14,
-      "rowHeight": 0.17,
-      "itemGapFraction": 0.012,
-      "iconHeight": 0.062,
-      "itemTitleY": 0.065,
-      "itemTextY": 0.107,
-      "itemTextHeight": 0.056,
-      "actionY": 0.681,
       "actionWidth": 0.19,
       "actionHeight": 0.058,
-      "itemTitleHeight": 0.041,
-      "actionGapFraction": 0.02
+      "actionGapFraction": 0.02,
+      "heightFraction": 0.6,
+      "actionY": 0.5
     }
   }
 }

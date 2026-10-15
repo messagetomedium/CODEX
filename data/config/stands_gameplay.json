@@ -2,7 +2,7 @@
   "schema_version": 1,
   "mode": "stands",
   "active_level": "level_1",
-  "round_duration_seconds": 60.0,
+  "round_duration_seconds": 30.0,
   "score": {
     "min": 0.0,
     "max": 100.0,
@@ -10,26 +10,27 @@
     "center": 50.0,
     "draw_tolerance": 0.5,
     "opponent_loss_per_full_turn": 5.0,
-    "player_gain_max_per_turn": 10.0,
-    "loudness_weight": 0.65,
-    "distinct_peak_weight": 0.35,
+    "player_gain_max_per_turn": 14.0,
+    "loudness_weight": 0.25,
+    "distinct_peak_weight": 0.75,
     "accumulate_player_score_during_turn": true,
     "commit_on_turn_boundary": true
   },
   "input": {
     "use_existing_shared_microphone": true,
     "speech_recognition": false,
-    "target_distinct_peaks_per_player_turn": 3,
+    "target_distinct_peaks_per_player_turn": 2,
     "distinct_peak_min_gap_ms": 350,
     "player_turn_only_scoring": true,
     "ignore_mic_during_opponent_audio": true,
     "disable_auto_feedback_to_speakers": true,
-    "speaker_echo_guard_ms": 120
+    "speaker_echo_guard_ms": 120,
+    "peak_threshold_normalized": 0.45
   },
   "timing": {
     "starts_with": "opponent",
     "fixed_turn_seconds": 5.0,
-    "turn_count": 12,
+    "turn_count": 6,
     "speaker_fade_ms": 100,
     "clock": "elapsed_monotonic_seconds",
     "time_starts_after_microphone_ready": true
@@ -37,12 +38,12 @@
   "levels": {
     "level_1": {
       "enabled": true,
-      "duration_seconds": 60.0,
+      "duration_seconds": 30.0,
       "turn_mode": "fixed",
       "turn_seconds": 5.0,
-      "target_peaks": 3,
+      "target_peaks": 2,
       "opponent_loss_per_full_turn": 5.0,
-      "player_gain_max_per_turn": 10.0,
+      "player_gain_max_per_turn": 14.0,
       "balanced_time_budget": true,
       "name_key": "stands.difficulty.level_1"
     },
@@ -51,11 +52,11 @@
       "turn_mode": "random",
       "turn_seconds_min": 3.0,
       "turn_seconds_max": 6.0,
-      "target_peaks": 4,
+      "target_peaks": 3,
       "faster_decay": true,
-      "duration_seconds": 60.0,
+      "duration_seconds": 30.0,
       "opponent_loss_per_full_turn": 6.0,
-      "player_gain_max_per_turn": 10.0,
+      "player_gain_max_per_turn": 14.0,
       "balanced_time_budget": true,
       "name_key": "stands.difficulty.level_2"
     },
@@ -64,11 +65,11 @@
       "turn_mode": "random",
       "turn_seconds_min": 3.0,
       "turn_seconds_max": 6.0,
-      "target_peaks": 5,
+      "target_peaks": 4,
       "faster_decay": true,
-      "duration_seconds": 60.0,
+      "duration_seconds": 30.0,
       "opponent_loss_per_full_turn": 7.0,
-      "player_gain_max_per_turn": 10.0,
+      "player_gain_max_per_turn": 14.0,
       "balanced_time_budget": true,
       "name_key": "stands.difficulty.level_3"
     }

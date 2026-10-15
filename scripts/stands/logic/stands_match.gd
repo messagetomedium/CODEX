@@ -1,5 +1,5 @@
 extends RefCounted
-## Deterministic 60-second tug-of-war. No renderer, audio, devices or wall clock.
+## Configured-duration tug-of-war. No renderer, audio, devices or wall clock.
 var settings: Dictionary
 var difficulty: Dictionary
 var turns: Array[Dictionary] = []

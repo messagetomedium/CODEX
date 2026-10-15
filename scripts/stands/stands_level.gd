@@ -1,5 +1,5 @@
 extends Node2D
-## Second mini-game. GoalLevel and the shared microphone bridge remain unchanged.
+## Second mini-game; uses the common popup, HUD entrance and microphone bridge.
 const World = preload("res://scripts/stands/stands_world.gd")
 const HUD = preload("res://scripts/stands/ui/stands_hud.gd")
 const Picker = preload("res://scripts/stands/ui/team_picker.gd")
@@ -10,7 +10,7 @@ const Clock = preload("res://scripts/stands/logic/session_clock.gd")
 const Bursts = preload("res://scripts/stands/logic/voice_bursts.gd")
 const Factory = preload("res://scripts/voice/voice_input_factory.gd")
 const Detector = preload("res://scripts/voice/voice_detector.gd")
-enum State { INTRO, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR, RESULT }
+enum State { INTRO, TEAM_SELECT, MIC_REQUEST, TRANSITION, ACTIVE, MIC_ERROR, RESULT }
 var state := State.INTRO
 var world: Node2D
 var hud: Control
@@ -57,6 +57,7 @@ func _ready() -> void:
 	add_child(layer)
 	hud = HUD.new()
 	hud.name = "HUD"
+	hud.hide()
 	layer.add_child(hud)
 	overlays = Overlays.new()
 	overlays.name = "OverlayManager"
@@ -68,7 +69,7 @@ func _ready() -> void:
 	_show_intro()
 
 func _select_team(index: int) -> void:
-	if state != State.INTRO:
+	if state not in [State.INTRO, State.TEAM_SELECT]:
 		return
 	player_index = index
 	var others: Array[int] = []
@@ -80,7 +81,17 @@ func _select_team(index: int) -> void:
 	hud.set_teams(teams[player_index],teams[opponent_index])
 	hud.present(match_model,level_index+1)
 
-func _show_intro(connecting: bool = false) -> void:
+func _show_intro() -> void:
+	var intro: Dictionary = App.config.data["ui.ru"].stands.intro
+	overlays.show_info({
+		"title":intro.title,"description":intro.objective,
+		"instructionItems":intro.instructions,
+		"animationProfile":"stands.intro_popup_enter",
+		"instructionProfile":"stands.intro_step_enter","iconProfile":"stands.intro_step_icon_slot",
+		"actions":[{"id":"choose_team","label":intro.continue_button}],
+	})
+
+func _show_team_picker(connecting: bool = false) -> void:
 	var intro: Dictionary = App.config.data["ui.ru"].stands.intro
 	var extra: Control
 	if not connecting:
@@ -89,15 +100,13 @@ func _show_intro(connecting: bool = false) -> void:
 		extra.configure(player_index)
 		extra.team_selected.connect(_select_team)
 	overlays.show_info({
-		"title":intro.title,
-		"description":App.texts.text("common.microphone.connecting") if connecting else intro.objective,
-		"instructionItems":intro.instructions,
-		"layoutId":"standsIntro","heightFraction":App.config.data.ui_layout.components.standsIntro.heightFraction,
-		"animationProfile":"stands.intro_popup_enter",
-		"instructionProfile":"stands.intro_step_enter","iconProfile":"stands.intro_step_icon_slot",
+		"title":intro.team_picker_title,
+		"description":App.texts.text("common.microphone.connecting") if connecting else intro.team_picker_hint,
+		"layoutId":"standsTeams","heightFraction":App.config.data.ui_layout.components.standsTeams.heightFraction,
+		"animationProfile":"stands.team_picker_popup",
 		"extraContent":extra,
 		"actions":[] if connecting else [{"id":"start","label":intro.start_button}],
-	},"standsIntro")
+	},"standsTeams")
 
 func _new_round() -> void:
 	match_model = Match.new(App.config.data.stands_gameplay,level_ids[level_index],rng.randi())
@@ -118,7 +127,10 @@ func _new_round() -> void:
 func _on_action(id: String) -> void:
 	if id == "menu":
 		App.reset()
-	elif id == "start" and state == State.INTRO:
+	elif id == "choose_team" and state == State.INTRO:
+		state = State.TEAM_SELECT
+		overlays.dismiss(_show_team_picker)
+	elif id == "start" and state == State.TEAM_SELECT:
 		_request_microphone()
 	elif id == "mic_retry" and state == State.MIC_ERROR:
 		_request_microphone()
@@ -139,15 +151,17 @@ func _on_action(id: String) -> void:
 			_request_microphone()
 
 func _request_microphone() -> void:
-	var is_intro := state == State.INTRO
+	var is_intro := state == State.TEAM_SELECT
+	App.reveal_level_hud(hud)
 	state = State.MIC_REQUEST
 	voice_input.start()
 	if is_intro:
-		_show_intro(true)
+		_show_team_picker(true)
 	else:
 		overlays.show_info({"title":App.texts.text("common.microphone.errorTitle"),"description":App.texts.text("common.microphone.connecting"),"layoutId":"microphoneError","animationProfile":"microphoneError.panel","actions":[]},"microphoneError")
 
 func _activate() -> void:
+	App.reveal_level_hud(hud)
 	var now: int = now_source.call()
 	if clock.started:clock.resume(now)
 	else:clock.start(now)

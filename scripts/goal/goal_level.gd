@@ -55,6 +55,7 @@ func _ready() -> void:
 	hud = Control.new()
 	hud.name = "HUD"
 	hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.hide()
 	ui_layer.add_child(hud)
 	_create_hud()
 	_create_status_banner()
@@ -153,6 +154,7 @@ func _on_action(id: String) -> void:
 		_request_microphone()
 
 func _request_microphone() -> void:
+	App.reveal_level_hud(hud)
 	var retrying := state != State.INTRO
 	state = State.MIC_REQUEST
 	detector.reset_controls()
@@ -199,6 +201,7 @@ func _process(delta: float) -> void:
 		_show_microphone_error(str(raw.status), str(raw.errorCode))
 
 func _activate_input() -> void:
+	App.reveal_level_hud(hud)
 	detector.reset_controls()
 	voice_frame = VoiceFrame.new()
 	if microphone_resume_state == State.EVENT:

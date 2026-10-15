@@ -16,8 +16,7 @@ func _ready() -> void:
 	var p: Array = layout.picker_rect
 	position = Vector2(p[0], p[1]) * unit
 	size = Vector2(p[2], p[3]) * unit
-	UI.label(self, App.texts.text("stands.intro.team_picker_title"), Rect2(0, 0, size.x, unit.y * layout.title_height), 28)
-	UI.label(self, App.texts.text("stands.intro.fictional_teams"), Rect2(0, unit.y * layout.hint_y, size.x, unit.y * layout.hint_height), 21)
+	UI.label(self, App.texts.text("stands.intro.fictional_teams"), Rect2(0, 0, size.x, unit.y * layout.hint_height), 21)
 	var gap: float = layout.gap * unit.x
 	var w := (size.x - gap * (teams.size() - 1)) / teams.size()
 	for i in teams.size():

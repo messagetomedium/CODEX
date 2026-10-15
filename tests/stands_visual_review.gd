@@ -23,6 +23,9 @@ func _run() -> void:
 		if arg.begins_with("--stands-"):mode=arg.trim_prefix("--stands-")
 	if mode=="intro":
 		await create_timer(.7).timeout
+	elif mode=="teams":
+		level.overlays.popup.action_buttons[0].pressed.emit()
+		await create_timer(.7).timeout
 	else:
 		level._select_team(0)
 		level.overlays.dismiss(level._activate)

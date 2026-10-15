@@ -43,6 +43,11 @@ func _ready() -> void:
 func open_goal() -> void:
 	_navigate("res://scenes/GoalLevel.tscn")
 
+func reveal_level_hud(hud: Control) -> void:
+	if not hud.visible:
+		hud.show()
+		animations.play(hud, "level.hud_enter")
+
 func open_stands() -> void:
 	_navigate("res://scenes/StandsLevel.tscn")
 
