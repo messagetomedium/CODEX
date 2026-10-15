@@ -1,0 +1,1305 @@
+{
+  "schema_version": 1,
+  "demonstration": true,
+  "levels": [
+    {
+      "id": "level_1",
+      "number": 1,
+      "name_key": "commentator.difficulty.level_1",
+      "duration_sec": 60,
+      "media": {
+        "background_texture_path": "",
+        "match_video_path": "",
+        "portrait_texture_path": ""
+      },
+      "turns": [
+        {
+          "speaker": "host",
+          "start_sec": 0,
+          "end_sec": 5,
+          "text": "Команда начинает новую атаку.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 5,
+          "end_sec": 10,
+          "words": [
+            {
+              "text": "Мяч",
+              "start_sec": 5.2,
+              "end_sec": 6.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "идёт",
+              "start_sec": 6.0,
+              "end_sec": 6.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "на",
+              "start_sec": 6.8,
+              "end_sec": 7.6,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПРАВЫЙ",
+              "start_sec": 7.6,
+              "end_sec": 8.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "ФЛАНГ",
+              "start_sec": 8.4,
+              "end_sec": 9.2,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "сейчас!",
+              "start_sec": 9.2,
+              "end_sec": 10.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 10,
+          "end_sec": 15,
+          "text": "Защитник встречает соперника у линии.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 15,
+          "end_sec": 20,
+          "words": [
+            {
+              "text": "Игрок",
+              "start_sec": 15.2,
+              "end_sec": 16.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "уходит",
+              "start_sec": 16.0,
+              "end_sec": 16.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "и",
+              "start_sec": 16.8,
+              "end_sec": 17.6,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ДЕЛАЕТ",
+              "start_sec": 17.6,
+              "end_sec": 18.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "точную",
+              "start_sec": 18.4,
+              "end_sec": 19.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПЕРЕДАЧУ!",
+              "start_sec": 19.2,
+              "end_sec": 20.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 20,
+          "end_sec": 25,
+          "text": "У штрафной появляется свободный партнёр.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 25,
+          "end_sec": 30,
+          "words": [
+            {
+              "text": "Вот",
+              "start_sec": 25.2,
+              "end_sec": 26.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "он",
+              "start_sec": 26.0,
+              "end_sec": 26.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "принимает",
+              "start_sec": 26.8,
+              "end_sec": 27.6,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "МЯЧ",
+              "start_sec": 27.6,
+              "end_sec": 28.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "перед",
+              "start_sec": 28.4,
+              "end_sec": 29.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "УДАРОМ!",
+              "start_sec": 29.2,
+              "end_sec": 30.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 30,
+          "end_sec": 35,
+          "text": "Вратарь внимательно следит за атакой.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 35,
+          "end_sec": 40,
+          "words": [
+            {
+              "text": "И",
+              "start_sec": 35.2,
+              "end_sec": 36.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "мяч",
+              "start_sec": 36.0,
+              "end_sec": 36.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "летит",
+              "start_sec": 36.8,
+              "end_sec": 37.6,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПРЯМО",
+              "start_sec": 37.6,
+              "end_sec": 38.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "под",
+              "start_sec": 38.4,
+              "end_sec": 39.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПЕРЕКЛАДИНУ!",
+              "start_sec": 39.2,
+              "end_sec": 40.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 40,
+          "end_sec": 45,
+          "text": "На этот раз защитник успел вернуться.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 45,
+          "end_sec": 50,
+          "words": [
+            {
+              "text": "Команда",
+              "start_sec": 45.2,
+              "end_sec": 46.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "снова",
+              "start_sec": 46.0,
+              "end_sec": 46.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ищет",
+              "start_sec": 46.8,
+              "end_sec": 47.6,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПУТЬ",
+              "start_sec": 47.6,
+              "end_sec": 48.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "к",
+              "start_sec": 48.4,
+              "end_sec": 49.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ВОРОТАМ!",
+              "start_sec": 49.2,
+              "end_sec": 50.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 50,
+          "end_sec": 55,
+          "text": "Ещё одна возможность впереди.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 55,
+          "end_sec": 60,
+          "words": [
+            {
+              "text": "И",
+              "start_sec": 55.2,
+              "end_sec": 56.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "вот",
+              "start_sec": 56.0,
+              "end_sec": 56.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "забит",
+              "start_sec": 56.8,
+              "end_sec": 57.6,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ГОЛ",
+              "start_sec": 57.6,
+              "end_sec": 58.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "под",
+              "start_sec": 58.4,
+              "end_sec": 59.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "АПЛОДИСМЕНТЫ!",
+              "start_sec": 59.2,
+              "end_sec": 60.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level_2",
+      "number": 2,
+      "name_key": "commentator.difficulty.level_2",
+      "duration_sec": 60,
+      "media": {
+        "background_texture_path": "",
+        "match_video_path": "",
+        "portrait_texture_path": ""
+      },
+      "turns": [
+        {
+          "speaker": "host",
+          "start_sec": 0,
+          "end_sec": 5,
+          "text": "Мяч быстро переходит от команды к команде.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 5,
+          "end_sec": 10,
+          "words": [
+            {
+              "text": "Снова",
+              "start_sec": 5.2,
+              "end_sec": 5.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "пас",
+              "start_sec": 5.8,
+              "end_sec": 6.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "вперёд:",
+              "start_sec": 6.4,
+              "end_sec": 7.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "БЫСТРЫЙ",
+              "start_sec": 7.0,
+              "end_sec": 7.6,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "РЫВОК",
+              "start_sec": 7.6,
+              "end_sec": 8.2,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "и",
+              "start_sec": 8.2,
+              "end_sec": 8.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ОСТРЫЙ",
+              "start_sec": 8.8,
+              "end_sec": 9.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "момент!",
+              "start_sec": 9.4,
+              "end_sec": 10.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 10,
+          "end_sec": 15,
+          "text": "Соперник пытается закрыть центр.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 15,
+          "end_sec": 20,
+          "words": [
+            {
+              "text": "Но",
+              "start_sec": 15.2,
+              "end_sec": 15.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "игрок",
+              "start_sec": 15.8,
+              "end_sec": 16.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "видит",
+              "start_sec": 16.4,
+              "end_sec": 17.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ФЛАНГ",
+              "start_sec": 17.0,
+              "end_sec": 17.6,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "и",
+              "start_sec": 17.6,
+              "end_sec": 18.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ДЕЛАЕТ",
+              "start_sec": 18.2,
+              "end_sec": 18.8,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "ТОЧНУЮ",
+              "start_sec": 18.8,
+              "end_sec": 19.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "передачу!",
+              "start_sec": 19.4,
+              "end_sec": 20.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 20,
+          "end_sec": 25,
+          "text": "У края штрафной становится тесно.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 25,
+          "end_sec": 30,
+          "words": [
+            {
+              "text": "Вот",
+              "start_sec": 25.2,
+              "end_sec": 25.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ещё",
+              "start_sec": 25.8,
+              "end_sec": 26.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "финт:",
+              "start_sec": 26.4,
+              "end_sec": 27.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПРОРЫВ",
+              "start_sec": 27.0,
+              "end_sec": 27.6,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "к",
+              "start_sec": 27.6,
+              "end_sec": 28.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "воротам,",
+              "start_sec": 28.2,
+              "end_sec": 28.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "МОЩНЫЙ",
+              "start_sec": 28.8,
+              "end_sec": 29.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "УДАР!",
+              "start_sec": 29.4,
+              "end_sec": 30.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 30,
+          "end_sec": 35,
+          "text": "Вратарь отбивает мяч перед собой.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 35,
+          "end_sec": 40,
+          "words": [
+            {
+              "text": "И",
+              "start_sec": 35.2,
+              "end_sec": 35.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "тут",
+              "start_sec": 35.8,
+              "end_sec": 36.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "снова",
+              "start_sec": 36.4,
+              "end_sec": 37.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ШАНС:",
+              "start_sec": 37.0,
+              "end_sec": 37.6,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "игрок",
+              "start_sec": 37.6,
+              "end_sec": 38.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "БЬЁТ",
+              "start_sec": 38.2,
+              "end_sec": 38.8,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "без",
+              "start_sec": 38.8,
+              "end_sec": 39.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПРОМЕДЛЕНИЯ!",
+              "start_sec": 39.4,
+              "end_sec": 40.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 40,
+          "end_sec": 45,
+          "text": "На трибунах ждут окончания атаки.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 45,
+          "end_sec": 50,
+          "words": [
+            {
+              "text": "Мяч",
+              "start_sec": 45.2,
+              "end_sec": 45.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "летит",
+              "start_sec": 45.8,
+              "end_sec": 46.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "выше",
+              "start_sec": 46.4,
+              "end_sec": 47.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ВРАТАРЯ",
+              "start_sec": 47.0,
+              "end_sec": 47.6,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "прямо",
+              "start_sec": 47.6,
+              "end_sec": 48.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "в",
+              "start_sec": 48.2,
+              "end_sec": 48.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "УГОЛ",
+              "start_sec": 48.8,
+              "end_sec": 49.4,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "ВОРОТ!",
+              "start_sec": 49.4,
+              "end_sec": 50.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 50,
+          "end_sec": 55,
+          "text": "Команда получает ещё одну возможность.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 55,
+          "end_sec": 60,
+          "words": [
+            {
+              "text": "Снова",
+              "start_sec": 55.2,
+              "end_sec": 55.8,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "шаг",
+              "start_sec": 55.8,
+              "end_sec": 56.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "вперёд:",
+              "start_sec": 56.4,
+              "end_sec": 57.0,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПЕРЕДАЧА,",
+              "start_sec": 57.0,
+              "end_sec": 57.6,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "затем",
+              "start_sec": 57.6,
+              "end_sec": 58.2,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "УДАР",
+              "start_sec": 58.2,
+              "end_sec": 58.8,
+              "emphasis": true,
+              "arrows": 1
+            },
+            {
+              "text": "и",
+              "start_sec": 58.8,
+              "end_sec": 59.4,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ГОЛ!",
+              "start_sec": 59.4,
+              "end_sec": 60.0,
+              "emphasis": true,
+              "arrows": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level_3",
+      "number": 3,
+      "name_key": "commentator.difficulty.level_3",
+      "duration_sec": 60,
+      "media": {
+        "background_texture_path": "",
+        "match_video_path": "",
+        "portrait_texture_path": ""
+      },
+      "turns": [
+        {
+          "speaker": "host",
+          "start_sec": 0,
+          "end_sec": 5,
+          "text": "Темп матча резко возрастает.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 5,
+          "end_sec": 10,
+          "words": [
+            {
+              "text": "И",
+              "start_sec": 5.2,
+              "end_sec": 5.68,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "вот",
+              "start_sec": 5.68,
+              "end_sec": 6.16,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "игрок",
+              "start_sec": 6.16,
+              "end_sec": 6.64,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ускоряется:",
+              "start_sec": 6.64,
+              "end_sec": 7.12,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "РЫВОК,",
+              "start_sec": 7.12,
+              "end_sec": 7.6,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ПЕРЕДАЧА",
+              "start_sec": 7.6,
+              "end_sec": 8.08,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "вперёд,",
+              "start_sec": 8.08,
+              "end_sec": 8.56,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "МОЩНЫЙ",
+              "start_sec": 8.56,
+              "end_sec": 9.04,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "УДАР",
+              "start_sec": 9.04,
+              "end_sec": 9.52,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "сейчас!",
+              "start_sec": 9.52,
+              "end_sec": 10.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 10,
+          "end_sec": 15,
+          "text": "У штрафной сразу несколько игроков.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 15,
+          "end_sec": 20,
+          "words": [
+            {
+              "text": "Снова",
+              "start_sec": 15.2,
+              "end_sec": 15.68,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "мяч",
+              "start_sec": 15.68,
+              "end_sec": 16.16,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "идёт",
+              "start_sec": 16.16,
+              "end_sec": 16.64,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "направо:",
+              "start_sec": 16.64,
+              "end_sec": 17.12,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "БЫСТРЫЙ",
+              "start_sec": 17.12,
+              "end_sec": 17.6,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ФИНТ",
+              "start_sec": 17.6,
+              "end_sec": 18.08,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "и",
+              "start_sec": 18.08,
+              "end_sec": 18.56,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ОПАСНЫЙ",
+              "start_sec": 18.56,
+              "end_sec": 19.04,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ПРОРЫВ",
+              "start_sec": 19.04,
+              "end_sec": 19.52,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "вперёд!",
+              "start_sec": 19.52,
+              "end_sec": 20.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 20,
+          "end_sec": 25,
+          "text": "Вратарь выходит навстречу нападающему.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 25,
+          "end_sec": 30,
+          "words": [
+            {
+              "text": "Он",
+              "start_sec": 25.2,
+              "end_sec": 25.68,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "видит",
+              "start_sec": 25.68,
+              "end_sec": 26.16,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "выход",
+              "start_sec": 26.16,
+              "end_sec": 26.64,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "вратаря:",
+              "start_sec": 26.64,
+              "end_sec": 27.12,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ОБВОДКА,",
+              "start_sec": 27.12,
+              "end_sec": 27.6,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "УДАР",
+              "start_sec": 27.6,
+              "end_sec": 28.08,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "и",
+              "start_sec": 28.08,
+              "end_sec": 28.56,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "НЕВЕРОЯТНЫЙ",
+              "start_sec": 28.56,
+              "end_sec": 29.04,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ГОЛ",
+              "start_sec": 29.04,
+              "end_sec": 29.52,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "сейчас!",
+              "start_sec": 29.52,
+              "end_sec": 30.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 30,
+          "end_sec": 35,
+          "text": "Соперник бросает силы в новую атаку.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 35,
+          "end_sec": 40,
+          "words": [
+            {
+              "text": "Но",
+              "start_sec": 35.2,
+              "end_sec": 35.68,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "тут",
+              "start_sec": 35.68,
+              "end_sec": 36.16,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "защитник",
+              "start_sec": 36.16,
+              "end_sec": 36.64,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "рядом:",
+              "start_sec": 36.64,
+              "end_sec": 37.12,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ПЕРЕХВАТ,",
+              "start_sec": 37.12,
+              "end_sec": 37.6,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ПАС",
+              "start_sec": 37.6,
+              "end_sec": 38.08,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "вперёд,",
+              "start_sec": 38.08,
+              "end_sec": 38.56,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ОТЛИЧНЫЙ",
+              "start_sec": 38.56,
+              "end_sec": 39.04,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ШАНС",
+              "start_sec": 39.04,
+              "end_sec": 39.52,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "забить!",
+              "start_sec": 39.52,
+              "end_sec": 40.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 40,
+          "end_sec": 45,
+          "text": "Мяч снова доставлен к штрафной.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 45,
+          "end_sec": 50,
+          "words": [
+            {
+              "text": "И",
+              "start_sec": 45.2,
+              "end_sec": 45.68,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "снова",
+              "start_sec": 45.68,
+              "end_sec": 46.16,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "мяч",
+              "start_sec": 46.16,
+              "end_sec": 46.64,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "уходит",
+              "start_sec": 46.64,
+              "end_sec": 47.12,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "ВПЕРЁД:",
+              "start_sec": 47.12,
+              "end_sec": 47.6,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "НАВЕС,",
+              "start_sec": 47.6,
+              "end_sec": 48.08,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "затем",
+              "start_sec": 48.08,
+              "end_sec": 48.56,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "МОЩНЫЙ",
+              "start_sec": 48.56,
+              "end_sec": 49.04,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "УДАР",
+              "start_sec": 49.04,
+              "end_sec": 49.52,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "головой!",
+              "start_sec": 49.52,
+              "end_sec": 50.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        },
+        {
+          "speaker": "host",
+          "start_sec": 50,
+          "end_sec": 55,
+          "text": "Приближается развязка демонстрационного матча.",
+          "audio_path": ""
+        },
+        {
+          "speaker": "player",
+          "start_sec": 55,
+          "end_sec": 60,
+          "words": [
+            {
+              "text": "И",
+              "start_sec": 55.2,
+              "end_sec": 55.68,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "вот",
+              "start_sec": 55.68,
+              "end_sec": 56.16,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "атака",
+              "start_sec": 56.16,
+              "end_sec": 56.64,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "продолжается:",
+              "start_sec": 56.64,
+              "end_sec": 57.12,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "РЫВОК,",
+              "start_sec": 57.12,
+              "end_sec": 57.6,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "УДАР,",
+              "start_sec": 57.6,
+              "end_sec": 58.08,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "затем",
+              "start_sec": 58.08,
+              "end_sec": 58.56,
+              "emphasis": false,
+              "arrows": 1
+            },
+            {
+              "text": "НЕВЕРОЯТНЫЙ",
+              "start_sec": 58.56,
+              "end_sec": 59.04,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "ГОЛ",
+              "start_sec": 59.04,
+              "end_sec": 59.52,
+              "emphasis": true,
+              "arrows": 2
+            },
+            {
+              "text": "команды!",
+              "start_sec": 59.52,
+              "end_sec": 60.0,
+              "emphasis": false,
+              "arrows": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

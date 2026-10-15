@@ -70,8 +70,8 @@ references/goal_scene_original.png # референс, НЕ фон и НЕ Web-�
 ```text
 MAIN_MENU
   card goal -> GOAL_LEVEL / INTRO (поле видно, стартовый попап)
-  card stands -> STANDS_LEVEL / INTRO (правила и выбор команды)
-  card commentator -> disabled
+  card stands -> STANDS_LEVEL / INTRO -> TEAM_SELECT
+  card commentator -> COMMENTATOR_LEVEL / INTRO
 GOAL_LEVEL:
   INTRO          -- клик «Начать» --> MIC_REQUEST
   MIC_REQUEST    -- browser promise OK --> ACTIVE
@@ -164,7 +164,7 @@ Godot Web экспорт — **однопоточный**: GitHub Pages не о�
 
 ## 9. Тест-план и критерии готовности
 
-1. `python3 tools/validate_handoff.py` проверяет спецификации и 5 JSON-конфигов; `godot --headless --path . --editor --import` импортирует ресурсы.
+1. `python3 tools/validate_handoff.py` проверяет спецификации и 12 JSON-конфигов; `godot --headless --path . --editor --import` импортирует ресурсы.
 2. `godot --headless --path . --export-release Web build/web/index.html` формирует `.html/.wasm/.pck` (нужны export templates Godot 4.5.2).
 3. `tests/config_smoke_test.gd` проверяет, что Godot видит конфиги `res://data/config` и читает GDD-константы 3/6/1.
 4. Браузер после Task 1: меню без общего заголовка, 3 карточки, только первая активна, цель/3 пиктограммы в ряд поверх blockout поля, глобальный Reset, нет новых полноэкранных result scenes.
@@ -246,3 +246,42 @@ Goal остаётся без звука; разрешён только собс�
 
 Точный скоринг, параметры уровней и инструкция замены компонентов:
 `STANDS_GAMEPLAY.md`. Изменения чисел требуют пересборки PCK в существующем CI.
+
+
+## 12. «Второй комментатор», три демонстрационных уровня
+
+Третья карточка включена по новому прямому запросу владельца. Это игровой
+уровень того же типа GAME_LEVEL. AGENTS.md оставлен без изменений; прежнее
+ограничение отключённой третьей карточки заменено новым согласованным ТЗ
+[COMMENTATOR_TZ_v1.0.md](docs/COMMENTATOR_TZ_v1.0.md).
+
+- `commentator_level.gd`: INTRO → MIC_REQUEST → TRANSITION → ACTIVE → RESULT,
+  ошибка микрофона ставит часы/модель/медиа на паузу. Next/Retry не повторяют
+  инструкцию; микрофон остаётся единственным. Время — существующий SessionClock.
+- `commentator_timeline.gd`: абсолютные авторские окна, шесть пар ходов и
+  36/48/60 слов игрока. Подсветка не зависит от оценки или наличия голоса.
+- `commentator_word_scorer.gd`: отдельное накопление активности/энергии,
+  относительная динамика и ближайший ритмический вход. Итог фиксируется один
+  раз, допуск конца ограничен началом следующего слова/границей хода.
+- `commentator_session.gd`: сегментация измерений по окнам, локальные подъёмы
+  огибающей без обязательной тишины между словами, индивидуальный базис обычной
+  речи, интерес и результат. Долгий кадр удерживает sample максимум 100 мс.
+- `commentator_world.gd` / `booth_layer.gd`: самостоятельные слои поля, матча,
+  окна и стола. Это авторские примитивы, а не архивное изображение.
+- `commentator_media.gd`: локальные optional slots фона, видео, портрета и
+  голоса ведущего. При пустых путях работает текстовая демонстрация; видео
+  без звука, отдельное host audio немедленно выключается при player/error/reset.
+  Реальные архивные файлы и их seek/кодеки пока не проверены: файлов нет.
+- `commentator_hud.gd` / `commentator_karaoke.gd`: только уровень/время, очередь,
+  один караоке-блок и интерес. Для каждого усиленного слова — bundled bold-font
+  и собственные стрелки; анимации только Tween с JSON-профилями.
+- Используется общий `ui.ru.json`, добавлены `commentator_gameplay.json`,
+  `commentator_levels.json`, `commentator_layout.json`. Это те же PCK/FileAccess
+  и TextCatalog, без второй конфигурационной или микрофонной системы.
+- GameInfoPopup обратносовместимо поддерживает количество строк статистики
+  и необязательный размер шрифта заголовков инструкции. Старые значения по
+  умолчанию сохранены. Финал третьего уровня показывает общий итог и три строки.
+- Шрифты DejaVu Sans regular/bold поставляются с полной лицензией; checker
+  кладёт `LICENSE-DejaVu.txt` рядом с Web export. Workflow и preset прежние.
+
+Расчёт и замена данных: [COMMENTATOR_GAMEPLAY.md](COMMENTATOR_GAMEPLAY.md).

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "scoring": {
+    "timing_weight": 0.4,
+    "activity_weight": 0.3,
+    "volume_weight": 0.3,
+    "voice_threshold": 0.1,
+    "coverage_target": 0.65,
+    "weak_activity_ratio": 0.2,
+    "weak_activity_cap": 25.0,
+    "no_rhythm_cap": 40.0,
+    "fallback_timing": 0.25,
+    "weak_emphasis_cap": 58.0,
+    "word_hit_score": 60.0,
+    "baseline_initial": 0.35,
+    "baseline_min": 0.12,
+    "baseline_max": 0.75,
+    "baseline_smoothing_sec": 0.6,
+    "emphasis_boost_ratio": 0.35,
+    "normal_loud_ratio": 1.8,
+    "onset_rise_delta": 0.07,
+    "onset_fall_delta": 0.045,
+    "onset_min_gap_sec": 0.14,
+    "max_sample_hold_sec": 0.1,
+    "speaker_echo_guard_sec": 0.12
+  },
+  "interest": {
+    "initial": 50.0,
+    "success_score": 60.0,
+    "gain_per_word": 2.8
+  },
+  "levels": {
+    "level_1": {
+      "enabled": true,
+      "pass_avg_score": 50,
+      "onset_tolerance_sec": 0.35,
+      "lateness_tolerance_sec": 0.2,
+      "warning_sec": 2.0,
+      "interest_loss_per_word": 1.5
+    },
+    "level_2": {
+      "enabled": true,
+      "pass_avg_score": 60,
+      "onset_tolerance_sec": 0.25,
+      "lateness_tolerance_sec": 0.15,
+      "warning_sec": 1.5,
+      "interest_loss_per_word": 2.2
+    },
+    "level_3": {
+      "enabled": true,
+      "pass_avg_score": 65,
+      "onset_tolerance_sec": 0.18,
+      "lateness_tolerance_sec": 0.1,
+      "warning_sec": 1.0,
+      "interest_loss_per_word": 3.0
+    }
+  },
+  "media": {
+    "host_volume_db": -12.0,
+    "video_drift_tolerance_sec": 0.3
+  }
+}

@@ -70,6 +70,12 @@
       "centerY": 0.51,
       "maxWidthFraction": 0.86,
       "maxHeightFraction": 0.6
+    },
+    "commentatorFinal": {
+      "centerX": 0.5,
+      "centerY": 0.5,
+      "maxWidthFraction": 0.78,
+      "maxHeightFraction": 0.68
     }
   },
   "eventPlacement": {
@@ -274,6 +280,21 @@
       "actionGapFraction": 0.02,
       "heightFraction": 0.6,
       "actionY": 0.5
+    },
+    "commentatorResult": {
+      "heightFraction": 0.68,
+      "paddingFraction": 0.025,
+      "titleY": 0.03,
+      "titleHeight": 0.08,
+      "objectiveY": 0.13,
+      "objectiveHeight": 0.045,
+      "statsY": 0.21,
+      "statHeight": 0.047,
+      "statGap": 0.012,
+      "actionY": 0.56,
+      "actionWidth": 0.2,
+      "actionHeight": 0.065,
+      "actionGapFraction": 0.02
     }
   }
 }

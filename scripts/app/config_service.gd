@@ -5,7 +5,7 @@ var data: Dictionary = {}
 var errors: Array[String] = []
 
 func load_all() -> bool:
-	for key in ["ui.ru", "ui_layout", "ui_animations", "gameplay", "asset_manifest", "stands_gameplay", "stands_teams", "stands_assets", "stands_layout"]:
+	for key in ["ui.ru", "ui_layout", "ui_animations", "gameplay", "asset_manifest", "stands_gameplay", "stands_teams", "stands_assets", "stands_layout", "commentator_gameplay", "commentator_levels", "commentator_layout"]:
 		var path := "res://data/config/%s.json" % key
 		var json := JSON.new()
 		if not FileAccess.file_exists(path):

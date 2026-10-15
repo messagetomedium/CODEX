@@ -57,8 +57,8 @@ if not (R/stands['audio']['path'].removeprefix('res://')).is_file() or stands['t
 cards=ui['menu']['cards']
 if [x['id'] for x in cards]!=['goal','stands','commentator']:
     errors.append('Menu must list goal, stands, commentator in that order')
-if [x['enabled'] for x in cards]!=[True,True,False]:
-    errors.append('Goal and Stands must be enabled; Commentator stays disabled')
+if [x['enabled'] for x in cards]!=[True,True,True]:
+    errors.append('All three mini-games must be enabled')
 if 'title' in ui['menu']:errors.append('Do not add a global menu title')
 if len(ui['goal']['intro']['instructions'])!=3:errors.append('Intro must have 3 infographic items')
 for item in ui['goal']['intro']['instructions']:
@@ -109,7 +109,7 @@ for profile in required_profiles:
     if profile not in anim['profiles']:errors.append(f'Missing animation profile: {profile}')
 if len(layout['eventPlacement']['fail']['candidates']) < 3:errors.append('Not enough safe notification anchors')
 if not assets['reference']['goalScene'] == 'references/goal_scene_original.png':errors.append('Wrong visual reference')
-allowed_vars={'goals','goalTarget','attemptsUsed','maxAttempts','round','seconds','peaks','targetPeaks','score','playerTeam','opponentTeam','turn','turnCount','levelCount'}
+allowed_vars={'goals','goalTarget','attemptsUsed','maxAttempts','round','seconds','peaks','targetPeaks','score','playerTeam','opponentTeam','turn','turnCount','levelCount','hitPercent','avgScore','interest'}
 # Validate all text templates, avoid assuming keys with placeholders are renamable.
 def walk(x, path='ui'):
     if isinstance(x,dict):
@@ -120,6 +120,34 @@ def walk(x, path='ui'):
         for v in re.findall(r'\{([^{}]*)\}',x):
             if v not in allowed_vars:errors.append(f'Unknown template variable {{{v}}} at {path}')
 walk(ui)
+commentator=load('commentator_gameplay.json')
+commentary=load('commentator_levels.json')
+load('commentator_layout.json')
+if len(commentary['levels'])!=3 or not commentary['demonstration']:
+    errors.append('Commentator requires three honest demonstration scenarios')
+for level in commentary['levels']:
+    end=0
+    player_turns=0
+    word_end=0
+    profile=commentator['levels'][level['id']]
+    if not profile['enabled'] or not 55<=level['duration_sec']<=65:
+        errors.append('Commentator levels must be playable and about one minute long')
+    for index,turn in enumerate(level['turns']):
+        if turn['speaker']!=('host' if index%2==0 else 'player') or turn['start_sec']!=end or turn['end_sec']<=turn['start_sec']:
+            errors.append('Commentator turns must alternate and cover the full timeline')
+        end=turn['end_sec']
+        if turn['speaker']=='player':
+            player_turns+=1
+            for word in turn['words']:
+                if not turn['start_sec']<=word['start_sec']<word['end_sec']<=end or word['start_sec']<word_end:
+                    errors.append('Commentator word times overlap or exceed the player turn')
+                word_end=word['end_sec']
+            if not turn['words'] or not any(w['emphasis'] for w in turn['words']):
+                errors.append('Commentator player phrases need words and emphasis')
+    if end!=level['duration_sec'] or player_turns<5:
+        errors.append('Commentator needs at least five complete host/player pairs')
+if sum(commentator['scoring'][k] for k in ['timing_weight','activity_weight','volume_weight'])!=1:
+    errors.append('Commentator word weights must sum to one')
 
 script=(R/'SCREEN_SCRIPT_UI_v1.0.md').read_text(encoding='utf8')
 if script.count('<!-- UI_CATALOG_BEGIN -->')!=1 or script.count('<!-- UI_CATALOG_END -->')!=1:
@@ -139,4 +167,4 @@ if 'barichello/godot-ci:4.5.2' not in workflow or 'actions/deploy-pages@v4' not 
 if errors:
     print('FAIL:\n'+'\n'.join(' - '+x for x in errors),file=sys.stderr)
     sys.exit(1)
-print(f'OK: Godot handoff, 9 JSON configs, Goal + Stands enabled, 3 Stands levels / 4 teams, {len(anim["profiles"])} animation profiles, Godot Web preset + Pages workflow')
+print(f'OK: Godot handoff, 12 JSON configs, all 3 mini-games enabled, 3 Stands levels / 4 teams, {len(anim["profiles"])} animation profiles, Godot Web preset + Pages workflow')

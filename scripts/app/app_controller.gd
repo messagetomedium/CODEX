@@ -51,6 +51,9 @@ func reveal_level_hud(hud: Control) -> void:
 func open_stands() -> void:
 	_navigate("res://scenes/StandsLevel.tscn")
 
+func open_commentator() -> void:
+	_navigate("res://scenes/CommentatorLevel.tscn")
+
 func reset() -> void:
 	_navigate("res://scenes/MainMenu.tscn")
 

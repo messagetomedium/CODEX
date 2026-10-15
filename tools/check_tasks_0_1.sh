@@ -60,9 +60,14 @@ run_godot stands --script res://tests/stands_match_test.gd
 run_godot stands-scene --script res://tests/stands_scene_test.gd
 grep -q 'Stands mechanics checks: .*failed: 0' build/checks/stands.log
 grep -q 'Stands scene checks: .*failed: 0' build/checks/stands-scene.log
+run_godot commentator --script res://tests/commentator_session_test.gd
+run_godot commentator-scene --script res://tests/commentator_scene_test.gd
+grep -q 'Commentator mechanics checks: .*failed: 0' build/checks/commentator.log
+grep -q 'Commentator scene checks: .*failed: 0' build/checks/commentator-scene.log
 node --test tests/microphone_bridge_test.cjs
 run_godot web --export-release Web build/web/index.html
 for artifact in index.html index.js index.wasm index.pck; do
     test -s "build/web/$artifact"
 done
-echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3/4 integration, three-round campaign, depth-aware soft collisions, voice detector, three Stands levels, JS bridge, Web artifacts'
+cp assets/commentator/fonts/LICENSE.txt build/web/LICENSE-DejaVu.txt
+echo 'PASS: handoff, Godot import, config smoke, Task 1/2/3/4 integration, three-round campaign, depth-aware soft collisions, voice detector, three Stands levels, three Commentator levels, JS bridge, Web artifacts'

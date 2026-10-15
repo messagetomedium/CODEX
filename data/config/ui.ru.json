@@ -22,7 +22,7 @@
         "id": "commentator",
         "title": "Второй комментатор",
         "description": "Стань великим комментатором!",
-        "enabled": false,
+        "enabled": true,
         "visualId": "menu.commentator"
       }
     ],
@@ -344,6 +344,65 @@
       "level_1": "Простой",
       "level_2": "Средний",
       "level_3": "Сложный"
+    }
+  },
+  "commentator": {
+    "intro": {
+      "title": "Второй комментатор",
+      "objective": "Подхвати реплики демонстрационного матча своим голосом!",
+      "instructions": [
+        {
+          "id": "enter",
+          "title": "Вступай вовремя",
+          "text": "Дождись своей очереди.",
+          "visual": {
+            "mode": "icon",
+            "iconId": "turn_wait"
+          }
+        },
+        {
+          "id": "words",
+          "title": "Следи за словами",
+          "text": "Говори в ритме подсветки.",
+          "visual": {
+            "mode": "icon",
+            "iconId": "commentator"
+          }
+        },
+        {
+          "id": "emphasis",
+          "title": "Усиливай выделенные слова",
+          "text": "Жирные слова со стрелками — громче.",
+          "visual": {
+            "mode": "icon",
+            "iconId": "voice_burst"
+          }
+        }
+      ]
+    },
+    "hud": {
+      "level": "Уровень {round} из {levelCount}",
+      "time": "Осталось: {seconds} с",
+      "host": "КОММЕНТАТОР",
+      "player": "ТВОЙ ХОД",
+      "countdown": "ТВОЙ ХОД ЧЕРЕЗ {seconds}",
+      "interest": "ИНТЕРЕС"
+    },
+    "difficulty": {
+      "level_1": "Спокойный темп",
+      "level_2": "Живой репортаж",
+      "level_3": "Развязка матча"
+    },
+    "results": {
+      "win": "Репортаж набирает силу!",
+      "loss": "Попробуй поймать ритм ещё раз!",
+      "final": "Отличный репортаж!",
+      "summary": "В ритме: {hitPercent}% · Средняя оценка: {avgScore}",
+      "interest": "Интерес: {interest} из 100",
+      "level_summary": "Уровень {round}: ритм {hitPercent}% · оценка {avgScore} · интерес {interest}",
+      "final_summary": "Всего в ритме: {hitPercent}% · Средняя оценка: {avgScore}",
+      "next": "Следующий уровень",
+      "demo": "Демонстрационный матч — вымышленный сюжет."
     }
   }
 }

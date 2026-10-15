@@ -834,6 +834,93 @@
           "opacity": 0
         }
       }
+    },
+    "commentator.intro": {
+      "enter": {
+        "durationMs": 240,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "yPx": 16,
+          "scale": 0.985
+        },
+        "to": {
+          "opacity": 1,
+          "yPx": 0,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 180,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1,
+          "yPx": 0
+        },
+        "to": {
+          "opacity": 0,
+          "yPx": -10
+        }
+      }
+    },
+    "commentator.result": {
+      "enter": {
+        "durationMs": 280,
+        "easing": "ease-out",
+        "from": {
+          "opacity": 0,
+          "scale": 0.96
+        },
+        "to": {
+          "opacity": 1,
+          "scale": 1
+        }
+      },
+      "exit": {
+        "durationMs": 180,
+        "easing": "ease-in",
+        "from": {
+          "opacity": 1
+        },
+        "to": {
+          "opacity": 0
+        }
+      }
+    },
+    "commentator.turn": {
+      "enter": {
+        "durationMs": 180,
+        "from": {
+          "opacity": 0.55
+        },
+        "to": {
+          "opacity": 1
+        }
+      }
+    },
+    "commentator.word": {
+      "enter": {
+        "durationMs": 90,
+        "from": {
+          "opacity": 0.55
+        },
+        "to": {
+          "opacity": 1
+        }
+      }
+    },
+    "commentator.arrow": {
+      "pulse": {
+        "durationMs": 600,
+        "risePx": 5,
+        "minOpacity": 0.7,
+        "maxOpacity": 1
+      }
+    },
+    "commentator.interest": {
+      "follow": {
+        "smoothingMs": 250
+      }
     }
   }
 }

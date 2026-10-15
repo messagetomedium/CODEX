@@ -22,13 +22,13 @@ func configure(content: Dictionary) -> void:
 	var title := UI.label(self, content.get("title", ""), Rect2(padding, unit.y * layout.titleY, size.x - padding * 2, unit.y * layout.titleHeight), 44 if result else 34)
 	if result:
 		App.animations.play(title, content.get("headlineProfile", "final.headline"))
+		var rows: Array = content.get("statistics", [])
 		var statistics := Control.new()
 		statistics.name = "Statistics"
 		statistics.position = Vector2(padding, unit.y * layout.statsY)
-		statistics.size = Vector2(size.x - padding * 2, unit.y * (layout.statHeight * 2 + layout.statGap))
+		statistics.size = Vector2(size.x - padding * 2, unit.y * (layout.statHeight * maxi(1, rows.size()) + layout.statGap * maxi(0, rows.size() - 1)))
 		statistics.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(statistics)
-		var rows: Array = content.get("statistics", [])
 		for i in rows.size():
 			UI.label(statistics, rows[i], Rect2(0, unit.y * i * (layout.statHeight + layout.statGap), statistics.size.x, unit.y * layout.statHeight), 32)
 		App.animations.play(statistics, content.get("statsProfile", "final.stats"))
@@ -51,7 +51,7 @@ func configure(content: Dictionary) -> void:
 			icon.kind = item_data.visual.iconId
 			icon.size = Vector2(item_width, unit.y * layout.iconHeight)
 			item.add_child(icon)
-			UI.label(item, item_data.title, Rect2(0, unit.y * layout.itemTitleY, item_width, unit.y * layout.itemTitleHeight), 25)
+			UI.label(item, item_data.title, Rect2(0, unit.y * layout.itemTitleY, item_width, unit.y * layout.itemTitleHeight), content.get("instructionTitleFontSize", 25))
 			UI.label(item, item_data.text, Rect2(0, unit.y * layout.itemTextY, item_width, unit.y * layout.itemTextHeight), 22)
 			App.animations.play(item, content.get("instructionProfile", "intro.instructionItem"), "enter", false, i)
 			App.animations.play(icon, content.get("iconProfile", "intro.visual.icon"))

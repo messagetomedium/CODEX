@@ -47,8 +47,9 @@ def stands_rows(value, path='stands'):
     elif isinstance(value, list):
         for index, child in enumerate(value): stands_rows(child, path+'.'+str(index))
     elif isinstance(value, str):
-        row(path,value,'Трибуны: инструкция / команды / HUD / результаты')
+        row(path,value,'Второй комментатор: инструкция / HUD / результаты' if path.startswith('commentator') else 'Трибуны: инструкция / команды / HUD / результаты')
 if 'stands' in js: stands_rows(js['stands'])
+if 'commentator' in js: stands_rows(js['commentator'], 'commentator')
 
 catalog = '\n'.join([
     '> **Важно:** этот каталог создан из `data/config/ui.ru.json`. Для редактирования реплик изменяйте JSON, затем запускайте `python tools/sync_ui_docs.py`.',

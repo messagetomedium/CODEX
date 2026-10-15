@@ -58,7 +58,7 @@ func _run() -> void:
 	app.reset()
 	await frames()
 	var menu: Control = current_scene
-	check(not menu.cards[0].disabled and not menu.cards[1].disabled and menu.cards[2].disabled,"Goal and Stands enabled; Commentator remains unavailable")
+	check(not menu.cards[0].disabled and not menu.cards[1].disabled and not menu.cards[2].disabled,"All three mini-games are enabled")
 	menu.cards[1].pressed.emit()
 	await frames()
 	await create_timer(.4).timeout

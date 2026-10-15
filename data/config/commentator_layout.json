@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "hud": {
+    "level": [
+      0.025,
+      0.035,
+      0.45,
+      0.045
+    ],
+    "timer": [
+      0.025,
+      0.085,
+      0.23,
+      0.04
+    ],
+    "turn": [
+      0.32,
+      0.16,
+      0.36,
+      0.075
+    ],
+    "karaoke": [
+      0.08,
+      0.65,
+      0.84,
+      0.18
+    ],
+    "interest_label": [
+      0.35,
+      0.87,
+      0.3,
+      0.035
+    ],
+    "interest": [
+      0.22,
+      0.918,
+      0.56,
+      0.023
+    ]
+  },
+  "karaoke": {
+    "font_size": 36,
+    "host_font_size": 38,
+    "arrow_font_size": 28,
+    "word_gap_px": 16,
+    "line_height_px": 72,
+    "arrow_offset_px": -32,
+    "padding_px": 22,
+    "active_color": "#edc55c",
+    "passed_color": "#b8cfbf",
+    "waiting_color": "#faf6ed",
+    "outline_color": "#183746",
+    "arrow_text": "↑"
+  },
+  "world": {
+    "sky": "#83b4c4",
+    "stand": "#bb927c",
+    "grass": "#668b5e",
+    "grass_alt": "#719765",
+    "booth": "#183746",
+    "desk": "#b48f6e",
+    "paper": "#faf6ed",
+    "window_rect": [
+      0.055,
+      0.05,
+      0.89,
+      0.61
+    ],
+    "player_colors": [
+      "#bc5a48",
+      "#2966ab"
+    ],
+    "player_height_fraction": 0.035,
+    "decoration_speed": 0.45
+  },
+  "intro": {
+    "instruction_title_font_size": 23
+  },
+  "media": {
+    "portrait_rect": [
+      0.012,
+      0.405,
+      0.12,
+      0.22
+    ]
+  }
+}

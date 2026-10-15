@@ -136,7 +136,10 @@ with sync_playwright() as p:
     click(1190, 49, 650)
     assert page.screenshot() == menu, 'Reset from Stands did not restore menu'
     click(1005, 360)
-    assert page.screenshot() == menu, 'Disabled commentator card navigated'
+    assert page.screenshot() != menu, 'Enabled Commentator card did not open'
+    assert page.evaluate('window.__micRequests') == 0, 'Commentator requested microphone before Start'
+    click(1190, 49, 650)
+    assert page.screenshot() == menu, 'Reset from Commentator did not restore menu'
     open_level()
     page.screenshot(path=str(out / 'intro.png'))
     assert page.evaluate('window.__micRequests') == 0, 'Intro requested microphone before Start'
